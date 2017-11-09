@@ -21,6 +21,16 @@ public class Task {
         this.deadline = deadline;
     }
 
+    public Task(String title, String description, String note, Date deadline, int assignee_id) {
+        this.title = title;
+        this.description = description;
+        this.note = note;
+        this.deadline = deadline;
+        this.assignee_id = assignee_id;
+    }
+
+
+
     public void setId(int id) {
         this.id = id;
     }

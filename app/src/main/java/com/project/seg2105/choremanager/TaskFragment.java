@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -43,9 +45,10 @@ public class TaskFragment extends Fragment implements
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbHelper.insertTask(db, new Task("IT IS WORKING!", "No desc", "Get the trash out", new Date()));
+                dbHelper.insertTask(db, new Task("IT IS WORKING!", "No desc", "Get the trash out", new Date(), 1));
                 //getActivity().getContentResolver().notifyChange(CONTENT_URI, null);
-                getLoaderManager().restartLoader(0, null, TaskFragment.this);
+                //getLoaderManager().restartLoader(0, null, TaskFragment.this);
+                ((MainActivity) getActivity()).notifyPeopleFragment();
 
                 Toast.makeText(getActivity(), "Working!", Toast.LENGTH_LONG).show();
             }
@@ -64,14 +67,14 @@ public class TaskFragment extends Fragment implements
         //This will call the onCreateLoader method below
         getLoaderManager().initLoader(0, null, this);
 
-        /*FloatingActionButton fab = view.findViewById(R.id.fab);
+        FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });*/
+        });
 
 
 
@@ -86,7 +89,8 @@ public class TaskFragment extends Fragment implements
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = db.query(MyDbHandler.TASK_TABLE_NAME, new String[]{MyDbHandler.TASK_ID, MyDbHandler.TASK_TITLE, MyDbHandler.TASK_NOTE}, null, null, null, null, null);
+            Cursor cursor = db.query(MyDbHandler.TASK_TABLE_NAME, new String[] {MyDbHandler.TASK_ID, MyDbHandler.TASK_TITLE, MyDbHandler.TASK_NOTE},
+                    null, null, null, null, null);
             cursor.getCount();
             return cursor;
         }

@@ -69,6 +69,7 @@ public class MyDbHandler extends SQLiteOpenHelper {
 
     public void insertTask(SQLiteDatabase db, Task task) {
         ContentValues content = new ContentValues();
+        content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
         content.put(TASK_NOTE, task.getNote());

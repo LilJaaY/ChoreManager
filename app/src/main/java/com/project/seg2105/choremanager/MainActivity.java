@@ -2,6 +2,9 @@ package com.project.seg2105.choremanager;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,9 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private TaskFragment taskFragment;
+    private PeopleFragment peopleFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,56 @@ public class MainActivity extends AppCompatActivity
         //Hooking up our TabLayout with the ViewPager
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private class PagerAdapter extends FragmentPagerAdapter {
+
+        private List<Fragment> fragments = new ArrayList<>();
+        private List<String> fragmentsTitles = new ArrayList<>();
+
+        public PagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return fragmentsTitles.get(position);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            fragments.add(fragment);
+            fragmentsTitles.add(title);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+            // save the appropriate reference depending on position
+            switch (position) {
+                case 0:
+                    taskFragment = (TaskFragment) createdFragment;
+                    break;
+                case 1:
+                    peopleFragment = (PeopleFragment) createdFragment;
+                    break;
+            }
+            return createdFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+    }
+
+    public void notifyPeopleFragment() {
+        peopleFragment.getLoaderManager().restartLoader(0, null, peopleFragment);
+        taskFragment.getLoaderManager().restartLoader(0, null, taskFragment);
     }
 
     @Override
