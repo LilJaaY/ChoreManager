@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
 
         //Page adapter for our ViewPager
         PagerAdapter pageAdapter = new PagerAdapter(getSupportFragmentManager());
-        pageAdapter.addFragment(new Tab1Fragment(), "TAB1");
+        pageAdapter.addFragment(new TaskFragment(), "Tasks");
         pageAdapter.addFragment(new PeopleFragment(), "People");
 
         //Setting the adapter of our ViewPager

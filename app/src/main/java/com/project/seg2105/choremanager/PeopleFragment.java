@@ -26,8 +26,10 @@ public class PeopleFragment extends ListFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new MyDbHandler(getActivity());
-        db = dbHelper.getWritableDatabase();
+        db = dbHelper.getReadableDatabase();
 
+        //We create a SimpleCursorAdapter without a cursor for now.
+        //The cursor will be provided in the onLoadFinished method below.
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.people_row, null,
                 new String[] { MyDbHandler.USER_NAME },
@@ -36,6 +38,7 @@ public class PeopleFragment extends ListFragment implements
 
         dbHelper.insertUser(db, new User("IT IS FUCKING WORKING!", "password", "avatar"));
 
+        //This will call the onCreateLoader method below.
         getLoaderManager().initLoader(0, null, this);
 
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -43,10 +46,11 @@ public class PeopleFragment extends ListFragment implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), null, new String[] {MyDbHandler.USER_ID, MyDbHandler.USER_NAME}, null, null, null) {
+        return new CursorLoader(getActivity(), null, null, null, null, null) {
             @Override
             public Cursor loadInBackground() {
-                return db.query(MyDbHandler.USER_TABLE_NAME, new String[] {MyDbHandler.USER_ID, MyDbHandler.USER_NAME}, null, null, null, null, null);
+                Cursor cursor = db.query(MyDbHandler.USER_TABLE_NAME, new String[] {MyDbHandler.USER_ID, MyDbHandler.USER_NAME}, null, null, null, null, null);
+                return cursor;
             }
         };
     }
