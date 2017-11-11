@@ -33,7 +33,7 @@ public class PeopleFragment extends ListFragment implements
         //The cursor will be provided in the onLoadFinished method below.
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.people_row, null,
-                new String[] { MyDbHandler.USER_ID , "TasksCount"},
+                new String[] { MyDbHandler.USER_NAME , "TasksCount" },
                 new int[] { R.id.name ,R.id.tasksCount}, 0);
         setListAdapter(adapter);
 
@@ -57,12 +57,12 @@ public class PeopleFragment extends ListFragment implements
                     null, null, null, null, null);
             cursor.getCount();
             return cursor;*/
-            String sql = "SELECT COUNT(" + MyDbHandler.USER_TABLE_NAME + "." + MyDbHandler.USER_ID + ") as TasksCount, "
+            String sql = "SELECT COUNT(" + MyDbHandler.TASK_TABLE_NAME + "." + MyDbHandler.TASK_ASSIGNEE_ID + ") as TasksCount, "
                     + MyDbHandler.USER_TABLE_NAME + "." + MyDbHandler.USER_ID + ", " + MyDbHandler.USER_NAME
                     + " FROM " + MyDbHandler.USER_TABLE_NAME + " LEFT JOIN " + MyDbHandler.TASK_TABLE_NAME
                     + " ON " + MyDbHandler.USER_TABLE_NAME + "." + MyDbHandler.USER_ID + " = " + MyDbHandler.TASK_ASSIGNEE_ID
-                    + " WHERE " + MyDbHandler.TASK_TABLE_NAME + "." + MyDbHandler.TASK_ID + " IS NOT NULL"
-                    + " GROUP BY " + MyDbHandler.USER_TABLE_NAME + "." + MyDbHandler.USER_ID + ";";
+//                    + " WHERE " + MyDbHandler.TASK_TABLE_NAME + "." + MyDbHandler.TASK_ID + " IS NOT NULL"
+                    + " GROUP BY " + MyDbHandler.TASK_TABLE_NAME + "." + MyDbHandler.TASK_ASSIGNEE_ID + ";";
             Cursor cursor = db.rawQuery(sql, null);
             cursor.getCount();
             return cursor;
