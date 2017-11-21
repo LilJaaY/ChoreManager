@@ -1,6 +1,7 @@
 package com.project.seg2105.choremanager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -73,6 +74,7 @@ public class TaskFragment extends Fragment implements
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                startActivity(new Intent(getActivity(), CreateTask.class));
             }
         });
 
