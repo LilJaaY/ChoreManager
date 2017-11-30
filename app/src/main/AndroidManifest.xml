@@ -19,10 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateUser" />
         <activity
             android:name=".CreateTask"
-            android:theme="@style/CreateTask"/>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>
