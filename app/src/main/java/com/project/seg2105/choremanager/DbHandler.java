@@ -39,6 +39,12 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TOOL_NAME = "Name";
     public static final String TOOL_ICON = "Icon_path";
 
+    /*Usage table*/
+    public static final String USAGE_TABLE_NAME = "Usage";
+    public static final String USAGE_ID = "_id";
+    public static final String USAGE_TOOL_ID = "tool_id";
+    public static final String USAGE_TASK_ID = "task_id";
+
     public static synchronized DbHandler getInstance(Context context) {
         if (singleInstance == null) {
             singleInstance = new DbHandler(context.getApplicationContext());
@@ -73,9 +79,15 @@ public class DbHandler extends SQLiteOpenHelper {
                 TOOL_NAME + " TEXT NOT NULL, " +
                 TOOL_ICON + " TEXT);";
 
+        String CREATE_USAGE_TABLE = "CREATE TABLE " + USAGE_TABLE_NAME + "(" +
+                USAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                USAGE_TOOL_ID + " INTEGER NOT NULL, " +
+                USAGE_TASK_ID + " INTEGER NOT NULL);";
+
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_TASK_TABLE);
         db.execSQL(CREATE_TOOL_TABLE);
+        db.execSQL(CREATE_USAGE_TABLE);
     }
 
     public void insertUser(User user) {
@@ -102,6 +114,13 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(TOOL_NAME, tool.getName());
         content.put(TOOL_ICON, tool.getIcon());
         singleInstance.getWritableDatabase().insert(TOOL_TABLE_NAME, null, content);
+    }
+
+    public void insertUsage(Usage usage) {
+        ContentValues content = new ContentValues();
+        content.put(USAGE_TOOL_ID, usage.getTool_id());
+        content.put(USAGE_TASK_ID, usage.getTask_id());
+        singleInstance.getWritableDatabase().insert(USAGE_TABLE_NAME, null, content);
     }
 
     public void updateUser(User user) {
@@ -145,6 +164,18 @@ public class DbHandler extends SQLiteOpenHelper {
         );
     }
 
+    public void updateUsage(Usage usage) {
+        ContentValues content = new ContentValues();
+        content.put(USAGE_TOOL_ID, usage.getTool_id());
+        content.put(USAGE_TASK_ID, usage.getTask_id());
+        singleInstance.getWritableDatabase().update(
+                USAGE_TABLE_NAME,
+                content,
+                USAGE_ID + "=" + usage.getId(),
+                null
+        );
+    }
+
     public void deleteUser(User user) {
         singleInstance.getWritableDatabase().delete(
                 USER_TABLE_NAME,
@@ -166,11 +197,20 @@ public class DbHandler extends SQLiteOpenHelper {
                 null);
     }
 
+    public void deleteUsage(Usage usage) {
+        singleInstance.getWritableDatabase().delete(
+                USAGE_TABLE_NAME,
+                USAGE_ID + "=" + usage.getId(),
+                null
+        );
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TASK_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TOOL_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + USAGE_TABLE_NAME);
         onCreate(db);
     }
 }
