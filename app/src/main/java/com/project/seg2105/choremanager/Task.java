@@ -8,74 +8,84 @@ import java.util.Date;
 
 public class Task {
     private int id;
+    private int creator_id;
     private int assignee_id;
     private String title;
     private String description;
     private String note;
-    private Date deadline;
+    private String deadline;
 
-    public Task(String title, String description, String note, Date deadline) {
+    public Task(int creator_id, String title, String description, String note, String deadline) {
+        this.creator_id = creator_id;
         this.title = title;
         this.description = description;
         this.note = note;
         this.deadline = deadline;
     }
 
-    public Task(String title, String description, String note, Date deadline, int assignee_id) {
+    public Task(int creator_id, int assignee_id, String title, String description, String note, String deadline) {
         this.title = title;
         this.description = description;
         this.note = note;
         this.deadline = deadline;
+        this.creator_id = creator_id;
         this.assignee_id = assignee_id;
     }
 
 
+    public int getId() {
+        return id;
+    }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public int getCreator_id() {
+        return creator_id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCreator_id(int creator_id) {
+        this.creator_id = creator_id;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public void setDeadline(Date deadline) {
-        this.deadline = deadline;
+    public int getAssignee_id() {
+        return assignee_id;
     }
 
     public void setAssignee_id(int assignee_id) {
         this.assignee_id = assignee_id;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getNote() {
         return note;
     }
 
-    public Date getDeadline() {
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getDeadline() {
         return deadline;
     }
 
-    public int getAssignee_id() {
-        return assignee_id;
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 }

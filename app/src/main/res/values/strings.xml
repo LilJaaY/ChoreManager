@@ -22,4 +22,5 @@
     </string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_create_task">CreateTask</string>
+    <string name="deadline">Deadline\n%1$s %2$d, %3$d</string>
 </resources>
