@@ -32,8 +32,10 @@ public class TaskFragment extends Fragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.task_fragment, container, false);
+
+        Tool tool = new Tool("Sponge", "circle_sponge");
+        DbHandler.getInstance(getActivity()).insertTool(tool);
 
         Button button = view.findViewById(R.id.btn);
         button.setOnClickListener(new Button.OnClickListener() {
@@ -50,8 +52,8 @@ public class TaskFragment extends Fragment implements
         //The cursor will be provided in the onLoadFinished method below.
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.task_row, null,
-                new String[] { DbHandler.TASK_TITLE, DbHandler.TASK_NOTE},
-                new int[] { R.id.title, R.id.note}, 0);
+                new String[] {DbHandler.TASK_TITLE, DbHandler.TASK_NOTE},
+                new int[] {R.id.title, R.id.note}, 0);
 
         ListView listview = view.findViewById(R.id.taskList);
         listview.setAdapter(adapter);

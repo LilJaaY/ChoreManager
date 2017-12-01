@@ -3,24 +3,50 @@ package com.project.seg2105.choremanager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
-public class CreateTask extends AppCompatActivity {
+public class CreateTask extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>{
+
     private static final Calendar CALENDAR = Calendar.getInstance();
+    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+
+        //Intialize equipments' listview
+        ListView listView = findViewById(R.id.tools);
+        adapter = new SimpleCursorAdapter(this,
+                R.layout.tool_row, null,
+                new String[] {DbHandler.TOOL_ID, DbHandler.TOOL_NAME, DbHandler.TOOL_ICON},
+                new int[] { R.id.toolId, R.id.name, R.id.icon}, 0){
+            @Override
+            public void setViewImage(ImageView v, String value) {
+                v.setImageResource(getResources().getIdentifier(value, "drawable", getApplicationContext().getPackageName()));
+            }
+        };
+        listView.setAdapter(adapter);
+        //This will call the onCreateLoader method below
+        getSupportLoaderManager().initLoader(0, null, this);
 
         //setting up back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,11 +70,11 @@ public class CreateTask extends AppCompatActivity {
     public void onCreateTaskClick(View view) {
         String title = ((EditText)findViewById(R.id.title)).getText().toString();
         //make sure it is not empty
-        int points = Integer.parseInt(((EditText)findViewById(R.id.points)).getText().toString());
+//        int points = Integer.parseInt(((EditText)findViewById(R.id.points)).getText().toString());
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
-        String date = CALENDAR.get(Calendar.YEAR) + "-" + CALENDAR.get(Calendar.MONTH) + "-" + CALENDAR.get(Calendar.DAY_OF_MONTH);
+        String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
         Task task = new Task(assigneeId, assigneeId, title, description, note, date);
         DbHandler.getInstance(this).insertTask(task);
 
@@ -79,6 +105,27 @@ public class CreateTask extends AppCompatActivity {
             CALENDAR.set(Calendar.YEAR, year);
             CALENDAR.set(Calendar.MONTH, month);
             CALENDAR.set(Calendar.DAY_OF_MONTH, day);
+
+            TextView textView = getActivity().findViewById(R.id.date);
+            textView.setText(getString(R.string.deadline,
+                    CALENDAR.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US),
+                    CALENDAR.get(Calendar.DAY_OF_MONTH),
+                    CALENDAR.get(Calendar.YEAR)));
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new MyCursorLoader(this, MyCursorLoader.ALL_TOOLS);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
     }
 }
