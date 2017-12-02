@@ -2,8 +2,10 @@ package com.project.seg2105.choremanager;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by jalilcompaore on 06/11/17.
@@ -90,15 +92,28 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_USAGE_TABLE);
     }
 
-    public void insertUser(User user) {
+    public int insertUser(User user) {
+        String sql;
+        int id;
         ContentValues content = new ContentValues();
         content.put(USER_NAME, user.getName());
         content.put(USER_PASSWORD, user.getPassword());
         content.put(USER_AVATAR, user.getAvatar());
         singleInstance.getWritableDatabase().insert(USER_TABLE_NAME, null, content);
+
+        //return Id
+        sql = "SELECT last_insert_rowid();";
+        Cursor c = singleInstance.getWritableDatabase().rawQuery(sql, null);
+        c.moveToFirst();
+        id = c.getInt(0);
+        c.close();
+        Log.d(id + "", "test");
+        return id;
     }
 
-    public void insertTask(Task task) {
+    public int insertTask(Task task) {
+        String sql;
+        int id;
         ContentValues content = new ContentValues();
         content.put(TASK_CREATOR_ID, task.getAssignee_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
@@ -107,20 +122,51 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(TASK_NOTE, task.getNote());
         content.put(TASK_DEADLINE, task.getDeadline());
         singleInstance.getWritableDatabase().insert(TASK_TABLE_NAME, null, content);
+
+        //return Id
+        sql = "SELECT last_insert_rowid();";
+        Cursor c = singleInstance.getWritableDatabase().rawQuery(sql, null);
+        c.moveToFirst();
+        id = c.getInt(0);
+        c.close();
+        Log.d(id + "", "test");
+        return id;
     }
 
-    public void insertTool(Tool tool) {
+    public int insertTool(Tool tool) {
+        String sql;
+        int id;
         ContentValues content = new ContentValues();
         content.put(TOOL_NAME, tool.getName());
         content.put(TOOL_ICON, tool.getIcon());
         singleInstance.getWritableDatabase().insert(TOOL_TABLE_NAME, null, content);
+
+        //return Id
+        sql = "SELECT last_insert_rowid();";
+        Cursor c = singleInstance.getWritableDatabase().rawQuery(sql, null);
+        c.moveToFirst();
+        id = c.getInt(0);
+        c.close();
+        Log.d(id + "", "test");
+        return id;
     }
 
-    public void insertUsage(Usage usage) {
+    public int insertUsage(Usage usage) {
+        String sql;
+        int id;
         ContentValues content = new ContentValues();
         content.put(USAGE_TOOL_ID, usage.getTool_id());
         content.put(USAGE_TASK_ID, usage.getTask_id());
         singleInstance.getWritableDatabase().insert(USAGE_TABLE_NAME, null, content);
+
+        //return Id
+        sql = "SELECT last_insert_rowid();";
+        Cursor c = singleInstance.getWritableDatabase().rawQuery(sql, null);
+        c.moveToFirst();
+        id = c.getInt(0);
+        c.close();
+        Log.d(id + "", "test");
+        return id;
     }
 
     public void updateUser(User user) {
