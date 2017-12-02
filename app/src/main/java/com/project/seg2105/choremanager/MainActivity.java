@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity
 
     private TaskFragment taskFragment;
     private PeopleFragment peopleFragment;
+    public User currentUser = new User("test", "test", "test");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Current user
+        currentUser.setId(2);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 
     public void notifyFragments() {
         peopleFragment.getLoaderManager().restartLoader(0, null, peopleFragment);
-        taskFragment.getLoaderManager().restartLoader(0, null, taskFragment);
+        taskFragment.refreshUI();
     }
 
     @Override

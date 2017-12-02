@@ -14,6 +14,8 @@ public class MyCursorLoader extends CursorLoader {
     public static final int ALL_TASKS = 0;
     public static final int ALL_USERS = 1;
     public static final int ALL_TOOLS = 2;
+    public static final int ALL_TASKS_FOR_PARTICULAR_USER = 3;
+    private User user;
     private int purpose;
     private WeakReference<Context> context;
 
@@ -23,16 +25,33 @@ public class MyCursorLoader extends CursorLoader {
         this.purpose = purpose;
     }
 
+    public MyCursorLoader(Context context, int purpose, User user) {
+        super(context);
+        this.context = new WeakReference<>(context);
+        this.purpose = purpose;
+        this.user = user;
+    }
+
     @Override
     public Cursor loadInBackground() {
         Cursor cursor;
         String sql;
         switch (purpose) {
+            case ALL_TASKS_FOR_PARTICULAR_USER:
+                sql = "SELECT " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ID + ", "
+                        + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", " + DbHandler.USER_AVATAR
+                        + " FROM " + DbHandler.TASK_TABLE_NAME + ", " + DbHandler.USER_TABLE_NAME
+                        + " WHERE " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID
+                        + " AND " + DbHandler.TASK_ASSIGNEE_ID + "=" + user.getId() + ";";
+                cursor = DbHandler.getInstance(context.get()).getWritableDatabase().rawQuery(sql, null);
+                cursor.getCount();
+                return cursor;
             case ALL_TASKS:
-                cursor = DbHandler.getInstance(context.get()).getWritableDatabase().query(
-                        DbHandler.TASK_TABLE_NAME,
-                        new String[] {DbHandler.TASK_ID, DbHandler.TASK_TITLE, DbHandler.TASK_NOTE},
-                        null, null, null, null, null);
+                sql = "SELECT " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ID + ", "
+                        + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", " + DbHandler.USER_AVATAR
+                        + " FROM " + DbHandler.TASK_TABLE_NAME + ", " + DbHandler.USER_TABLE_NAME
+                        + " WHERE " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + ";";
+                cursor = DbHandler.getInstance(context.get()).getWritableDatabase().rawQuery(sql, null);
                 cursor.getCount();
                 return cursor;
             case ALL_USERS:

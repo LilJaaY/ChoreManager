@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,7 +19,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -41,6 +41,7 @@ public class CreateTask extends AppCompatActivity implements
                 new int[] { R.id.toolId, R.id.name, R.id.icon}, 0){
             @Override
             public void setViewImage(ImageView v, String value) {
+                //Setting the src attribute of the ImageView
                 v.setImageResource(getResources().getIdentifier(value, "drawable", getApplicationContext().getPackageName()));
             }
         };
@@ -68,15 +69,30 @@ public class CreateTask extends AppCompatActivity implements
     }
 
     public void onCreateTaskClick(View view) {
+        /*Inserting the task*/
+        int taskId;
         String title = ((EditText)findViewById(R.id.title)).getText().toString();
-        //make sure it is not empty
+//        make sure it is not empty
 //        int points = Integer.parseInt(((EditText)findViewById(R.id.points)).getText().toString());
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
         String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
         Task task = new Task(assigneeId, assigneeId, title, description, note, date);
-        DbHandler.getInstance(this).insertTask(task);
+        taskId = DbHandler.getInstance(this).insertTask(task);
+
+        /*Linking the task to the tools needed for it*/
+        ListView list = findViewById(R.id.tools);
+        for(int i = 0; i < list.getCount(); i++) {
+            View v = list.getChildAt(i);
+            CheckBox checkBox = v.findViewById(R.id.checkbox);
+            if(checkBox.isChecked()) {
+                Usage usage;
+                int toolId = Integer.parseInt(((TextView)(v.findViewById(R.id.toolId))).getText().toString());
+                usage = new Usage(toolId, taskId);
+                DbHandler.getInstance(this).insertUsage(usage);
+            }
+        }
 
         //go back
         finish();
