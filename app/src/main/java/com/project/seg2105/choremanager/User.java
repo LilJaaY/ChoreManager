@@ -9,6 +9,7 @@ public class User {
     private String name;
     private String password;
     private String avatar;
+    private String accountRecovery;
 
     public User(String name, String password, String avatar) {
         this.avatar = avatar;
@@ -47,4 +48,8 @@ public class User {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
+
+    public String getAccountRecovery(){ return accountRecovery; }
+
+    public void setAccountRecovery(String accountRecovery){this.accountRecovery = accountRecovery;}
 }

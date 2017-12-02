@@ -9,18 +9,17 @@
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_activity_create_task">CreateTask</string>
-    <string name="deadline">Deadline\n%1$s %2$d, %3$d</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="action_register">Create New User</string>
+    <string name="newuser_title">New User</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="recover_title">Activity of Shame</string>
+    <string name="action_login">Login</string>
+    <string name="error_field_required">Password Recovery</string>
+    <string name="prompt_color">Favorite Color (For Password Recovery)</string>
+    <string name="prompt_color_dialog">Favorite Color </string>
+    <string name="login_title">Chore Manager</string>
+    <string name="create_user">Create New User</string>
 </resources>

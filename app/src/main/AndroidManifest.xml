@@ -21,7 +21,9 @@
         </activity>
         <activity
             android:name=".CreateTask"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Authentication" />
+        <activity android:name=".CreateUser" />
     </application>
 
 </manifest>
