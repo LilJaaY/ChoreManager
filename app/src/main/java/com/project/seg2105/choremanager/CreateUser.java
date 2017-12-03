@@ -12,6 +12,7 @@ public class CreateUser extends AppCompatActivity {
     EditText usernameText;
     EditText passwordText;
     EditText confirmText;
+    EditText recoveryText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,22 +22,24 @@ public class CreateUser extends AppCompatActivity {
         usernameText = findViewById(R.id.UsernameInput);
         passwordText = findViewById(R.id.PasswordInput);
         confirmText = findViewById(R.id.PasswordConfirm);
+        recoveryText = findViewById(R.id.RecoveryInput);
     }
 
     public void createUser(View view){
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
         String confirm = confirmText.getText().toString();
+        String recovery = recoveryText.getText().toString();
 
         boolean meetsCriteria = (username != "" && username != null && password != "" &&
-                password != null && confirm != "" && confirm != null );
+                password != null && confirm != "" && confirm != null && recovery != "" && recovery != null );
 
         if (meetsCriteria) {
             //Todo: (Jalil) Store new user in DB
 
             startActivity(new Intent(CreateUser.this, Authentication.class));
         } else {
-            Toast.makeText(getApplicationContext(), "Incomplete input(s)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Incomplete/Incorrect input(s)", Toast.LENGTH_LONG).show();
         }
 
     }

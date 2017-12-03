@@ -41,7 +41,7 @@
             android:layout_marginTop="86dp"
             android:ems="10"
             android:hint="@string/prompt_username"
-            android:inputType="textPersonName"
+            android:inputType="text"
             android:textSize="18sp" />
 
         <EditText
@@ -53,7 +53,7 @@
             android:layout_marginTop="18dp"
             android:ems="10"
             android:hint="@string/prompt_password"
-            android:inputType="text" />
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/PasswordConfirm"
@@ -64,7 +64,7 @@
             android:layout_marginTop="14dp"
             android:ems="10"
             android:hint="@string/prompt_confirm_password"
-            android:inputType="textPersonName" />
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/ConfirmButton"
@@ -77,7 +77,7 @@
             android:text="@string/action_register" />
 
         <EditText
-            android:id="@+id/editText6"
+            android:id="@+id/RecoveryInput"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/PasswordConfirm"
@@ -85,7 +85,7 @@
             android:layout_marginTop="32dp"
             android:ems="10"
             android:hint="@string/prompt_color"
-            android:inputType="textPersonName" />
+            android:inputType="text" />
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

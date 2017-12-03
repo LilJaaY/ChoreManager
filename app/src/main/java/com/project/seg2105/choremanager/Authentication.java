@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Authentication extends AppCompatActivity {
+public class Authentication extends AppCompatActivity implements PassRecoveryFragment.RecoveryDialogListener {
 
     EditText usernameText;
     EditText passwordText;
@@ -19,7 +19,7 @@ public class Authentication extends AppCompatActivity {
         setContentView(R.layout.activity_authentication);
 
         usernameText = findViewById(R.id.UsernameInput);
-        passwordText = findViewById((R.id.PasswordInput);
+        passwordText = findViewById(R.id.PasswordInput);
     }
 
     public void login(View view){
@@ -48,5 +48,13 @@ public class Authentication extends AppCompatActivity {
     public void recoverPassword(View view){
         DialogFragment recoveryDialog = new PassRecoveryFragment();
         recoveryDialog.show(getFragmentManager(), "recovery");
+    }
+
+    public void onPosClick(DialogFragment dialog, String user, String recovery){
+        String recoveredPassword = "";
+
+        //Todo: (Jalil) Query DB for a user with matching username and recovery input (the ones in this function's listener) and fetch password as string.
+
+        Toast.makeText(getApplicationContext(), recoveredPassword, Toast.LENGTH_LONG).show();
     }
 }
