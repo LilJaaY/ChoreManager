@@ -19,7 +19,7 @@ public class Authentication extends AppCompatActivity {
         setContentView(R.layout.activity_authentication);
 
         usernameText = findViewById(R.id.UsernameInput);
-        passwordText = findViewById((R.id.PasswordInput);
+        passwordText = findViewById((R.id.PasswordInput));
     }
 
     public void login(View view){

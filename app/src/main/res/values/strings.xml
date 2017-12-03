@@ -22,4 +22,6 @@
     <string name="prompt_color_dialog">Favorite Color </string>
     <string name="login_title">Chore Manager</string>
     <string name="create_user">Create New User</string>
+
+    <string name="deadline">Deadline\n%1$s %2$d, %3$d</string>
 </resources>

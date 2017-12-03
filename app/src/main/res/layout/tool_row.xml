@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:src="@drawable/circle_sponge"
+        android:src="@drawable/circle_chainsaw"
         android:layout_width="50dp"
         android:layout_height="50dp" />
 

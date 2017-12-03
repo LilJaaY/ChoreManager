@@ -11,6 +11,8 @@ public class User {
     private String avatar;
     private String accountRecovery;
 
+    public User() {}
+
     public User(String name, String password, String avatar) {
         this.avatar = avatar;
         this.password = password;

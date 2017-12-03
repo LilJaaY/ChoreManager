@@ -78,7 +78,7 @@ public class CreateTask extends AppCompatActivity implements
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
         String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
-        Task task = new Task(assigneeId, assigneeId, title, description, note, date);
+        Task task = new Task(assigneeId, assigneeId, title, description, note, "", date);
         taskId = DbHandler.getInstance(this).insertTask(task);
 
         /*Linking the task to the tools needed for it*/
