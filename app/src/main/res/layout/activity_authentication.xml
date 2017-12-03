@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.project.seg2105.choremanager.Authentication">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/LoginTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:fontFamily="cursive"
+            android:text="@string/login_title"
+            android:textColor="@android:color/holo_blue_light"
+            android:textSize="30sp" />
+
+        <EditText
+            android:id="@+id/UsernameInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/LoginTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:ems="10"
+            android:hint="@string/prompt_username"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/PasswordInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/UsernameInput"
+            android:layout_alignTop="@+id/UsernameInput"
+            android:layout_marginTop="69dp"
+            android:ems="10"
+            android:hint="@string/prompt_password"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/LoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/RegisterButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:onClick="login"
+            android:text="@string/action_login"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/RegisterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="35dp"
+            android:onClick="createUser"
+            android:text="@string/action_register"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/ForgotButton"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/PasswordInput"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:onClick="recoverPassword"
+            android:text="@string/forgot_password"
+            android:textColor="@android:color/holo_blue_light"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>
