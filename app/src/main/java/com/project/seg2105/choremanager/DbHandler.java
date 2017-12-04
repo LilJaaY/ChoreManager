@@ -33,6 +33,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TASK_TITLE = "Title";
     public static final String TASK_DESC = "Description";
     public static final String TASK_NOTE = "Note";
+    public static final String TASK_STATUS = "Status";
     public static final String TASK_DEADLINE = "Deadline";
 
     /*Tool table*/
@@ -40,6 +41,8 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TOOL_ID = "_id";
     public static final String TOOL_NAME = "Name";
     public static final String TOOL_ICON = "Icon_path";
+    //Tools count
+    public static int TOOLS_COUNT = 0;
 
     /*Usage table*/
     public static final String USAGE_TABLE_NAME = "Usage";
@@ -74,6 +77,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 TASK_TITLE + " TEXT NOT NULL, " +
                 TASK_DESC + " TEXT NOT NULL, " +
                 TASK_NOTE + " TEXT NOT NULL, " +
+                TASK_STATUS + " TEXT, " +
                 TASK_DEADLINE + " TEXT);";
 
         String CREATE_TOOL_TABLE = "CREATE TABLE " + TOOL_TABLE_NAME + "(" +
@@ -115,11 +119,12 @@ public class DbHandler extends SQLiteOpenHelper {
         String sql;
         int id;
         ContentValues content = new ContentValues();
-        content.put(TASK_CREATOR_ID, task.getAssignee_id());
+        content.put(TASK_CREATOR_ID, task.getCreator_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
         content.put(TASK_NOTE, task.getNote());
+        content.put(TASK_STATUS, task.getStatus());
         content.put(TASK_DEADLINE, task.getDeadline());
         singleInstance.getWritableDatabase().insert(TASK_TABLE_NAME, null, content);
 
@@ -134,6 +139,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public int insertTool(Tool tool) {
+        TOOLS_COUNT++;
         String sql;
         int id;
         ContentValues content = new ContentValues();
@@ -169,6 +175,91 @@ public class DbHandler extends SQLiteOpenHelper {
         return id;
     }
 
+    public User findUser(User userToFind) {
+        User userFound = null;
+        Cursor cursor;
+        cursor = singleInstance.getWritableDatabase().query(
+                DbHandler.USER_TABLE_NAME,
+                new String[] {DbHandler.USER_ID, DbHandler.USER_NAME, DbHandler.USER_PASSWORD, DbHandler.USER_AVATAR},
+                DbHandler.USER_ID + "=" + userToFind.getId(), null, null, null, null);
+        if(cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String password = cursor.getString(2);
+            String avatar = cursor.getString(3);
+            userFound = new User(name, password, avatar);
+            userFound.setId(id);
+        }
+        cursor.close();
+        return userFound;
+    }
+
+    public Task findTask(Task taskToFind) {
+        Task taskFound = null;
+        Cursor cursor;
+        cursor = singleInstance.getWritableDatabase().query(
+                DbHandler.TASK_TABLE_NAME,
+                new String[] {DbHandler.TASK_ID, DbHandler.TASK_CREATOR_ID, DbHandler.TASK_ASSIGNEE_ID,
+                        DbHandler.TASK_TITLE, DbHandler.TASK_DESC, DbHandler.TASK_NOTE,
+                        DbHandler.TASK_STATUS, DbHandler.TASK_DEADLINE},
+                DbHandler.TASK_ID + "=" + taskToFind.getId(), null, null, null, null);
+        if(cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            int creatorId = cursor.getInt(1);
+            int assigneeId = cursor.getInt(2);
+            String title = cursor.getString(3);
+            String description = cursor.getString(4);
+            String note = cursor.getString(5);
+            String status = cursor.getString(6);
+            String deadline = cursor.getString(7);
+            taskFound = new Task(creatorId, title, description, note, status, deadline);
+            taskFound.setId(id);
+            taskFound.setAssignee_id(assigneeId);
+        }
+        cursor.close();
+        return taskFound;
+    }
+
+    public Tool findTool(Tool toolToFind) {
+        Tool toolFound = null;
+        Cursor cursor;
+        cursor = singleInstance.getWritableDatabase().query(
+                DbHandler.TOOL_TABLE_NAME,
+                new String[] {DbHandler.TOOL_ID, DbHandler.TOOL_NAME, DbHandler.TOOL_ICON},
+                DbHandler.TOOL_ID + "=" + toolToFind.getId(), null, null, null, null);
+        if(cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String icon = cursor.getString(2);
+            toolFound = new Tool(name, icon);
+            toolFound.setId(id);
+        }
+        cursor.close();
+        return toolFound;
+    }
+
+    public Usage findUsage(Usage usageToFind) {
+        Usage usageFound = null;
+        Cursor cursor;
+        cursor = singleInstance.getWritableDatabase().query(
+                DbHandler.USAGE_TABLE_NAME,
+                new String[] {DbHandler.USAGE_ID, DbHandler.USAGE_TOOL_ID, DbHandler.USAGE_TASK_ID},
+                DbHandler.USAGE_ID + "=" + usageToFind.getId(), null, null, null, null);
+        if(cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            int tooId = cursor.getInt(1);
+            int taskId = cursor.getInt(2);
+            usageFound = new Usage(tooId, taskId);
+            usageFound.setId(id);
+        }
+        cursor.close();
+        return usageFound;
+    }
+
     public void updateUser(User user) {
         ContentValues content = new ContentValues();
         content.put(USER_NAME, user.getName());
@@ -184,7 +275,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     public void udpateTask(Task task) {
         ContentValues content = new ContentValues();
-        content.put(TASK_CREATOR_ID, task.getAssignee_id());
+        content.put(TASK_CREATOR_ID, task.getCreator_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
@@ -237,6 +328,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public void deleteTool(Tool tool) {
+        TOOLS_COUNT--;
         singleInstance.getWritableDatabase().delete(
                 TOOL_TABLE_NAME,
                 TOOL_ID + "=" + tool.getId(),

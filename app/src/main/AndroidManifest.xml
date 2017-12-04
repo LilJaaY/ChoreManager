@@ -24,6 +24,8 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".Authentication" />
         <activity android:name=".CreateUser" />
+        <activity android:name=".EditTask" />
+        <activity android:name=".ViewTask"></activity>
     </application>
 
 </manifest>

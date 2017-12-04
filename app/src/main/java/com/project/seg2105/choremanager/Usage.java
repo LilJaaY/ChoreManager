@@ -9,6 +9,8 @@ public class Usage {
     private int tool_id;
     private int task_id;
 
+    public Usage() {}
+
     public Usage(int tool_id, int task_id) {
         this.tool_id = tool_id;
         this.task_id = task_id;

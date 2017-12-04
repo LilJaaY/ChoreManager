@@ -13,20 +13,39 @@ public class Task {
     private String title;
     private String description;
     private String note;
+    private String status;
     private String deadline;
 
-    public Task(int creator_id, String title, String description, String note, String deadline) {
+    public enum Status {
+        UNASSIGNED("Unassigned"), ASSIGNED("Assigned"), COMPLETED("Completed"), UNCOMPLETED("Uncompleted");
+        private String status;
+
+        private Status(final String status) {
+            this.status = status;
+        }
+
+        @Override
+        public String toString() {
+            return status;
+        }
+    }
+
+    public Task() {}
+
+    public Task(int creator_id, String title, String description, String note, String status, String deadline) {
         this.creator_id = creator_id;
         this.title = title;
         this.description = description;
         this.note = note;
+        this.status = status;
         this.deadline = deadline;
     }
 
-    public Task(int creator_id, int assignee_id, String title, String description, String note, String deadline) {
+    public Task(int creator_id, int assignee_id, String title, String description, String note, String status, String deadline) {
         this.title = title;
         this.description = description;
         this.note = note;
+        this.status = status;
         this.deadline = deadline;
         this.creator_id = creator_id;
         this.assignee_id = assignee_id;
@@ -87,5 +106,13 @@ public class Task {
 
     public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

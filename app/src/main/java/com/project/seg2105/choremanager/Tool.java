@@ -9,6 +9,8 @@ public class Tool {
     private String name;
     private String icon;
 
+    public Tool() {}
+
     public Tool(String name, String icon) {
         this.icon = icon;
         this.name = name;
