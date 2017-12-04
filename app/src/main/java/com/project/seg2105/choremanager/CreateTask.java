@@ -34,9 +34,11 @@ import java.util.Locale;
 public class CreateTask extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
-    private static final Calendar CALENDAR = Calendar.getInstance();
-    private SimpleCursorAdapter toolsAdapter;
+    protected static final Calendar CALENDAR = Calendar.getInstance();
+    protected SimpleCursorAdapter toolsAdapter;
     private SimpleCursorAdapter peopleAdapter;
+    protected Spinner spinner;
+    protected ArrayList<Boolean> checkBoxStates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +47,22 @@ public class CreateTask extends AppCompatActivity implements
 
         //Intialize equipments' listview
         String sql = "SELECT * FROM " + DbHandler.TOOL_TABLE_NAME + ";";
-        Cursor cursor = DbHandler.getInstance(this).getReadableDatabase().rawQuery(sql, null);
+        Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
         int toolsCount = cursor.getCount();
         cursor.close();
         ListView listView = findViewById(R.id.tools);
+
+        //Initializing checkboxes' states
+        checkBoxStates = new ArrayList<>();
+        for(int i = 0; i < toolsCount; i++) {
+            checkBoxStates.add(i, false);
+        }
+
         //Using custom adapter defined inside activity code
         toolsAdapter = new CheckBoxAdapter(this,
                 R.layout.tool_row, null,
                 new String[] {DbHandler.TOOL_ID, DbHandler.TOOL_NAME, DbHandler.TOOL_ICON},
-                new int[] { R.id.toolId, R.id.name, R.id.icon}, 0, toolsCount) {
+                new int[] { R.id.toolId, R.id.name, R.id.icon}, 0) {
 
             @Override
             public void setViewImage(ImageView v, String value) {
@@ -68,7 +77,7 @@ public class CreateTask extends AppCompatActivity implements
         getSupportActionBar().setTitle("Create a new task");
 
         //Initializing spinner
-        Spinner spinner = findViewById(R.id.users);
+        spinner = findViewById(R.id.users);
         peopleAdapter = new SimpleCursorAdapter(this,
                 R.layout.people_row_2, null,
                 new String[] {DbHandler.USER_ID, DbHandler.USER_AVATAR, DbHandler.USER_NAME},
@@ -88,14 +97,10 @@ public class CreateTask extends AppCompatActivity implements
 
     }
 
-    private static class CheckBoxAdapter extends SimpleCursorAdapter {
-        private ArrayList<Boolean> checkBoxStates = new ArrayList<>();
+    protected class CheckBoxAdapter extends SimpleCursorAdapter {
 
-        CheckBoxAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, int toolsCount) {
+        CheckBoxAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
-            for(int i = 0; i < toolsCount; i++) {
-                checkBoxStates.add(i, false);
-            }
         }
 
         @Override
@@ -125,7 +130,7 @@ public class CreateTask extends AppCompatActivity implements
         return true;
     }
 
-    public void onCreateTaskClick(View view) {
+    public void onSubmitClick(View view) {
         /*Inserting the task*/
         Task task;
         int taskId;
@@ -151,7 +156,6 @@ public class CreateTask extends AppCompatActivity implements
             CheckBox checkBox = v.findViewById(R.id.checkbox);
             if(checkBox.isChecked()) {
                 Usage usage;
-                TextView t = v.findViewById(R.id.toolId);
                 int toolId = Integer.parseInt(((TextView)(v.findViewById(R.id.toolId))).getText().toString());
                 usage = new Usage(toolId, taskId);
                 DbHandler.getInstance(this).insertUsage(usage);

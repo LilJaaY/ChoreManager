@@ -33,7 +33,7 @@ public class PeopleFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.people_fragment, container, false);
 
-        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Peerson 4", "password", "girl_1")) + "");
+        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Person 3", "password", "girl_1")) + "");
 
         //We create a SimpleCursorAdapter without a cursor for now.
         //The cursor will be provided in the onLoadFinished method below.

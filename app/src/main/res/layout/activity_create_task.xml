@@ -94,7 +94,7 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/buildIcon"/>
+                android:layout_toEndOf="@id/buildIcon"/>
 
             <ListView
                 android:id="@+id/tools"
@@ -215,8 +215,8 @@
             android:background="#E0E0E0" />
 
         <Button
-            android:onClick="onCreateTaskClick"
-            android:id="@+id/createTask"
+            android:onClick="onSubmitClick"
+            android:id="@+id/submit"
             android:layout_gravity="center"
             android:text="Create task"
             android:textColor="#FFF"

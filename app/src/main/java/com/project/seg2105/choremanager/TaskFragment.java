@@ -100,9 +100,10 @@ public class TaskFragment extends Fragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.taskId);
                 int taskId = Integer.parseInt(id.getText().toString());
-                Intent intent = new Intent(getActivity(), ViewTask.class);
+                //TODO: CHANGE LATER
+                Intent intent = new Intent(getActivity(), EditTask.class);
                 intent.putExtra("TaskID", taskId);
-                startActivityForResult(intent, VIEW_TASK_REQUEST);
+                startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
 
@@ -171,6 +172,8 @@ public class TaskFragment extends Fragment implements
                 Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
                 break;
             case EDIT_TASK_REQUEST:
+                ((MainActivity)getActivity()).notifyFragments();
+                Toast.makeText(getActivity(), "Task updated!", Toast.LENGTH_LONG).show();
                 break;
             case VIEW_TASK_REQUEST:
                 break;
