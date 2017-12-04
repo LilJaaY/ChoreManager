@@ -41,6 +41,8 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TOOL_ID = "_id";
     public static final String TOOL_NAME = "Name";
     public static final String TOOL_ICON = "Icon_path";
+    //Tools count
+    public static int TOOLS_COUNT = 0;
 
     /*Usage table*/
     public static final String USAGE_TABLE_NAME = "Usage";
@@ -117,7 +119,7 @@ public class DbHandler extends SQLiteOpenHelper {
         String sql;
         int id;
         ContentValues content = new ContentValues();
-        content.put(TASK_CREATOR_ID, task.getAssignee_id());
+        content.put(TASK_CREATOR_ID, task.getCreator_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
@@ -137,6 +139,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public int insertTool(Tool tool) {
+        TOOLS_COUNT++;
         String sql;
         int id;
         ContentValues content = new ContentValues();
@@ -272,7 +275,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     public void udpateTask(Task task) {
         ContentValues content = new ContentValues();
-        content.put(TASK_CREATOR_ID, task.getAssignee_id());
+        content.put(TASK_CREATOR_ID, task.getCreator_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
@@ -325,6 +328,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public void deleteTool(Tool tool) {
+        TOOLS_COUNT--;
         singleInstance.getWritableDatabase().delete(
                 TOOL_TABLE_NAME,
                 TOOL_ID + "=" + tool.getId(),

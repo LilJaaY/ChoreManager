@@ -48,18 +48,21 @@ public class MyCursorLoader extends CursorLoader {
                 return cursor;
             case ALL_TASKS:
                 sql = "SELECT " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ID + ", "
-                        + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", " + DbHandler.USER_AVATAR
-                        + " FROM " + DbHandler.TASK_TABLE_NAME + ", " + DbHandler.USER_TABLE_NAME
-                        + " WHERE " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + ";";
+                        + DbHandler.TASK_TITLE + ", " + DbHandler.TASK_NOTE + ", " + DbHandler.USER_AVATAR
+                        + ", " + DbHandler.TASK_DEADLINE + ", " + DbHandler.TASK_STATUS + ", "
+                        + DbHandler.TASK_DESC + ", " + DbHandler.TASK_CREATOR_ID
+                        + " FROM " + DbHandler.TASK_TABLE_NAME + " LEFT JOIN " + DbHandler.USER_TABLE_NAME
+                        + " ON " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + ";";
                 cursor = DbHandler.getInstance(context.get()).getWritableDatabase().rawQuery(sql, null);
                 cursor.getCount();
                 return cursor;
             case ALL_USERS:
                 sql = "SELECT COUNT(" + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + ") as TasksCount, "
                         + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + ", " + DbHandler.USER_NAME
+                        + ", " + DbHandler.USER_PASSWORD + ", " + DbHandler.USER_AVATAR
                         + " FROM " + DbHandler.USER_TABLE_NAME + " LEFT JOIN " + DbHandler.TASK_TABLE_NAME
                         + " ON " + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + " = " + DbHandler.TASK_ASSIGNEE_ID
-                        + " GROUP BY " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + ";";
+                        + " GROUP BY " + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID + ";";
                 cursor = DbHandler.getInstance(context.get()).getWritableDatabase().rawQuery(sql, null);
                 cursor.getCount();
                 return cursor;

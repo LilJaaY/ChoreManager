@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class TaskFragment extends Fragment implements
 
     private static final int CREATE_TASK_REQUEST = 1;
     private static final int EDIT_TASK_REQUEST = 2;
+    private static final int VIEW_TASK_REQUEST = 3;
 
     @Nullable
     @Override
@@ -42,14 +44,14 @@ public class TaskFragment extends Fragment implements
         View view = inflater.inflate(R.layout.task_fragment, container, false);
 
         //TODO: remove later
-        Tool tool = new Tool("Sponge", "circle_sponge");
+        Tool tool = new Tool("Hello", "circle_ladder");
         DbHandler.getInstance(getActivity()).insertTool(tool);
 
         Button button = view.findViewById(R.id.btn);
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DbHandler.getInstance(getActivity()).insertTask(new Task(1, 1, "IT IS WORKING!", "No desc", "Test note","Get the trash out", ""));
+                DbHandler.getInstance(getActivity()).insertTask(new Task(1, 1, "Task C", "No desc", "Test note","Get the trash out", ""));
                 ((MainActivity)getActivity()).notifyFragments();
                 Toast.makeText(getActivity(), "Working!", Toast.LENGTH_LONG).show();
             }
@@ -72,9 +74,24 @@ public class TaskFragment extends Fragment implements
             @Override
             public void setViewImage(ImageView v, String value) {
                 //Setting the src attribute of the ImageView
-                v.setImageResource(getResources().getIdentifier(value, "drawable", getActivity().getApplicationContext().getPackageName()));
+                v.setImageResource(getResources().getIdentifier(value, "drawable", getActivity().getPackageName()));
             }
         };
+
+        //This will set the task's icon to a default image when it is unassigned.
+        adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Cursor cursor, int i) {
+                boolean b = view.getId() == R.id.avatar;
+                if(view.getId() == R.id.avatar) {
+                    if(cursor.isNull(i)) {
+                        ((ImageView)(view)).setImageResource(R.drawable.question_mark_button);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         ListView listview = view.findViewById(R.id.taskList);
         listview.setAdapter(adapter);
@@ -83,9 +100,9 @@ public class TaskFragment extends Fragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.taskId);
                 int taskId = Integer.parseInt(id.getText().toString());
-                Intent intent = new Intent(getActivity(), EditTask.class);
+                Intent intent = new Intent(getActivity(), ViewTask.class);
                 intent.putExtra("TaskID", taskId);
-                startActivityForResult(intent, EDIT_TASK_REQUEST);
+                startActivityForResult(intent, VIEW_TASK_REQUEST);
             }
         });
 
@@ -99,7 +116,7 @@ public class TaskFragment extends Fragment implements
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                startActivityForResult(new Intent(getActivity(), CreateTask.class), 1);
+                startActivityForResult(new Intent(getActivity(), CreateTask.class), CREATE_TASK_REQUEST);
             }
         });
         TextView textButton = view.findViewById(R.id.textButton);
@@ -154,6 +171,8 @@ public class TaskFragment extends Fragment implements
                 Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
                 break;
             case EDIT_TASK_REQUEST:
+                break;
+            case VIEW_TASK_REQUEST:
                 break;
             default: break;
         }
