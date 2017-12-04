@@ -44,7 +44,7 @@
             android:layout_marginTop="69dp"
             android:ems="10"
             android:hint="@string/prompt_password"
-            android:inputType="textPersonName" />
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/LoginButton"
