@@ -9,14 +9,16 @@ public class User {
     private String name;
     private String password;
     private String avatar;
+    private int points;
     private String accountRecovery;
 
     public User() {}
 
-    public User(String name, String password, String avatar) {
+    public User(String name, String password, String avatar, int points) {
         this.avatar = avatar;
         this.password = password;
         this.name = name;
+        this.points = points;
     }
 
     public int getId() {
@@ -49,6 +51,14 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public String getAccountRecovery(){ return accountRecovery; }

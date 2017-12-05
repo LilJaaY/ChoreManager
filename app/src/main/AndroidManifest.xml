@@ -25,7 +25,8 @@
         <activity android:name=".Authentication" />
         <activity android:name=".CreateUser" />
         <activity android:name=".EditTask" />
-        <activity android:name=".ViewTask"></activity>
+        <activity android:name=".ViewTask" />
+        <activity android:name=".UserTask"></activity>
     </application>
 
 </manifest>

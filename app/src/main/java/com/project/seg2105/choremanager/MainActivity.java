@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity
 
     private TaskFragment taskFragment;
     private PeopleFragment peopleFragment;
-    public User currentUser = new User("test", "test", "test");
+    public User currentUser = new User("test", "test", "test", 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

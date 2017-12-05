@@ -24,6 +24,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String USER_NAME = "Name";
     public static final String USER_PASSWORD = "Password";
     public static final String USER_AVATAR = "Avatar_path";
+    public static final String USER_POINTS = "Points";
 
     /*Task table*/
     public static final String TASK_TABLE_NAME = "Task";
@@ -35,6 +36,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TASK_NOTE = "Note";
     public static final String TASK_STATUS = "Status";
     public static final String TASK_DEADLINE = "Deadline";
+    public static final String TASK_REWARD = "Reward";
 
     /*Tool table*/
     public static final String TOOL_TABLE_NAME = "Tool";
@@ -68,7 +70,8 @@ public class DbHandler extends SQLiteOpenHelper {
                 USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 USER_NAME + " TEXT NOT NULL, " +
                 USER_PASSWORD + " TEXT NOT NULL, " +
-                USER_AVATAR + " TEXT);";
+                USER_AVATAR + " TEXT, " +
+                USER_POINTS + " INTEGER);";
 
         String CREATE_TASK_TABLE = "CREATE TABLE " + TASK_TABLE_NAME + "(" +
                 TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -77,8 +80,9 @@ public class DbHandler extends SQLiteOpenHelper {
                 TASK_TITLE + " TEXT NOT NULL, " +
                 TASK_DESC + " TEXT NOT NULL, " +
                 TASK_NOTE + " TEXT NOT NULL, " +
-                TASK_STATUS + " TEXT, " +
-                TASK_DEADLINE + " TEXT);";
+                TASK_STATUS + " TEXT NOT NULL, " +
+                TASK_DEADLINE + " TEXT NOT NULL, " +
+                TASK_REWARD + " INTEGER NOT NULL);";
 
         String CREATE_TOOL_TABLE = "CREATE TABLE " + TOOL_TABLE_NAME + "(" +
                 TOOL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -103,6 +107,7 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(USER_NAME, user.getName());
         content.put(USER_PASSWORD, user.getPassword());
         content.put(USER_AVATAR, user.getAvatar());
+        content.put(USER_POINTS, user.getPoints());
         singleInstance.getWritableDatabase().insert(USER_TABLE_NAME, null, content);
 
         //return Id
@@ -126,6 +131,7 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(TASK_NOTE, task.getNote());
         content.put(TASK_STATUS, task.getStatus());
         content.put(TASK_DEADLINE, task.getDeadline());
+        content.put(TASK_REWARD, task.getReward());
         singleInstance.getWritableDatabase().insert(TASK_TABLE_NAME, null, content);
 
         //return Id
@@ -180,7 +186,7 @@ public class DbHandler extends SQLiteOpenHelper {
         Cursor cursor;
         cursor = singleInstance.getWritableDatabase().query(
                 DbHandler.USER_TABLE_NAME,
-                new String[] {DbHandler.USER_ID, DbHandler.USER_NAME, DbHandler.USER_PASSWORD, DbHandler.USER_AVATAR},
+                new String[] {DbHandler.USER_ID, DbHandler.USER_NAME, DbHandler.USER_PASSWORD, DbHandler.USER_AVATAR, DbHandler.USER_POINTS},
                 DbHandler.USER_ID + "=" + userToFind.getId(), null, null, null, null);
         if(cursor.getCount() == 1) {
             cursor.moveToFirst();
@@ -188,7 +194,8 @@ public class DbHandler extends SQLiteOpenHelper {
             String name = cursor.getString(1);
             String password = cursor.getString(2);
             String avatar = cursor.getString(3);
-            userFound = new User(name, password, avatar);
+            int points = cursor.getInt(4);
+            userFound = new User(name, password, avatar, points);
             userFound.setId(id);
         }
         cursor.close();
@@ -202,7 +209,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 DbHandler.TASK_TABLE_NAME,
                 new String[] {DbHandler.TASK_ID, DbHandler.TASK_CREATOR_ID, DbHandler.TASK_ASSIGNEE_ID,
                         DbHandler.TASK_TITLE, DbHandler.TASK_DESC, DbHandler.TASK_NOTE,
-                        DbHandler.TASK_STATUS, DbHandler.TASK_DEADLINE},
+                        DbHandler.TASK_STATUS, DbHandler.TASK_DEADLINE, DbHandler.TASK_REWARD},
                 DbHandler.TASK_ID + "=" + taskToFind.getId(), null, null, null, null);
         if(cursor.getCount() == 1) {
             cursor.moveToFirst();
@@ -214,7 +221,8 @@ public class DbHandler extends SQLiteOpenHelper {
             String note = cursor.getString(5);
             String status = cursor.getString(6);
             String deadline = cursor.getString(7);
-            taskFound = new Task(creatorId, title, description, note, status, deadline);
+            int reward = cursor.getInt(8);
+            taskFound = new Task(creatorId, title, description, note, status, deadline, reward);
             taskFound.setId(id);
             taskFound.setAssignee_id(assigneeId);
         }
@@ -265,6 +273,7 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(USER_NAME, user.getName());
         content.put(USER_PASSWORD, user.getPassword());
         content.put(USER_AVATAR, user.getAvatar());
+        content.put(USER_POINTS, user.getPoints());
         singleInstance.getWritableDatabase().update(
                 USER_TABLE_NAME,
                 content,
@@ -273,14 +282,16 @@ public class DbHandler extends SQLiteOpenHelper {
         );
     }
 
-    public void udpateTask(Task task) {
+    public void updateTask(Task task) {
         ContentValues content = new ContentValues();
         content.put(TASK_CREATOR_ID, task.getCreator_id());
         content.put(TASK_ASSIGNEE_ID, task.getAssignee_id());
         content.put(TASK_TITLE, task.getTitle());
         content.put(TASK_DESC, task.getDescription());
         content.put(TASK_NOTE, task.getNote());
+        content.put(TASK_STATUS, task.getStatus());
         content.put(TASK_DEADLINE, task.getDeadline());
+        content.put(TASK_REWARD, task.getReward());
         singleInstance.getWritableDatabase().update(
                 TASK_TABLE_NAME,
                 content,

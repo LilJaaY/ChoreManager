@@ -15,6 +15,7 @@ public class Task {
     private String note;
     private String status;
     private String deadline;
+    private int reward;
 
     public enum Status {
         UNASSIGNED("Unassigned"), ASSIGNED("Assigned"), COMPLETED("Completed"), UNCOMPLETED("Uncompleted");
@@ -32,16 +33,17 @@ public class Task {
 
     public Task() {}
 
-    public Task(int creator_id, String title, String description, String note, String status, String deadline) {
+    public Task(int creator_id, String title, String description, String note, String status, String deadline, int reward) {
         this.creator_id = creator_id;
         this.title = title;
         this.description = description;
         this.note = note;
         this.status = status;
         this.deadline = deadline;
+        this.reward = reward;
     }
 
-    public Task(int creator_id, int assignee_id, String title, String description, String note, String status, String deadline) {
+    public Task(int creator_id, int assignee_id, String title, String description, String note, String status, String deadline, int reward) {
         this.title = title;
         this.description = description;
         this.note = note;
@@ -49,6 +51,7 @@ public class Task {
         this.deadline = deadline;
         this.creator_id = creator_id;
         this.assignee_id = assignee_id;
+        this.reward = reward;
     }
 
 
@@ -114,5 +117,13 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getReward() {
+        return reward;
+    }
+
+    public void setReward(int reward) {
+        this.reward = reward;
     }
 }

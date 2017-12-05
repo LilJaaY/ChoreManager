@@ -12,6 +12,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,6 +46,27 @@ public class CreateTask extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+
+        //Default reward value
+        final TextView reward = findViewById(R.id.reward);
+        reward.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().isEmpty()) {
+                    reward.setText(0+"");
+                }
+            }
+        });
 
         //Intialize equipments' listview
         String sql = "SELECT * FROM " + DbHandler.TOOL_TABLE_NAME + ";";
@@ -136,16 +159,16 @@ public class CreateTask extends AppCompatActivity implements
         int taskId;
         String title = ((EditText)findViewById(R.id.title)).getText().toString();
 //        make sure it is not empty
-//        int points = Integer.parseInt(((EditText)findViewById(R.id.points)).getText().toString());
+        int points = Integer.parseInt(((EditText)findViewById(R.id.reward)).getText().toString());
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
         String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
         if(assigneeId > 0) {
             //TODO: change later
-            task = new Task(1, assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date);
+            task = new Task(1, assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date, points);
         } else {
-            task = new Task(1, assigneeId, title, description, note, Task.Status.UNASSIGNED.toString(), date);
+            task = new Task(1, title, description, note, Task.Status.UNASSIGNED.toString(), date, points);
         }
         taskId = DbHandler.getInstance(this).insertTask(task);
 
@@ -198,7 +221,7 @@ public class CreateTask extends AppCompatActivity implements
                         CALENDAR.get(Calendar.DAY_OF_MONTH),
                         CALENDAR.get(Calendar.YEAR)));
             } else {
-                Toast.makeText(getActivity(), "You can't set the deadline in the past! C'mon!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "You can't set the deadline in the past!", Toast.LENGTH_LONG).show();
             }
         }
     }
