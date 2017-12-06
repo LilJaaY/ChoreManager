@@ -1,33 +1,40 @@
 package com.project.seg2105.choremanager;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.alamkanak.weekview.MonthLoader;
-import com.alamkanak.weekview.WeekView;
-import com.alamkanak.weekview.WeekViewEvent;
+import com.github.tibolte.agendacalendarview.AgendaCalendarView;
+import com.github.tibolte.agendacalendarview.CalendarPickerController;
+import com.github.tibolte.agendacalendarview.models.BaseCalendarEvent;
+import com.github.tibolte.agendacalendarview.models.CalendarEvent;
+import com.github.tibolte.agendacalendarview.models.DayItem;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
-public class Calendar extends AppCompatActivity {
+public class ScheduleView extends AppCompatActivity implements CalendarPickerController{
 
-    WeekView view;
+
     Task[] tasks;
-    List<WeekViewEvent> events;
+    List<CalendarEvent> events;
+    AgendaCalendarView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
+        setContentView(R.layout.activity_schedule_view);
 
-        view = findViewById(R.id.calendar);
+        view = findViewById(R.id.agendaCalendar);
+        events = new ArrayList<>();
 
-        //Todo (Jalil) query DB for all tasks and store them in "tasks" array
         String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + ";";
         Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
-        tasks = new Task[cursor.getCount()];
-        for(int i = 0; i < cursor.getCount(); i++) {
+        tasks = new Task[500];
+        for(int i = 0; i < 500; i++) {
             cursor.moveToNext();
             int creatorId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_CREATOR_ID));
             int assigneeId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ASSIGNEE_ID));
@@ -42,6 +49,11 @@ public class Calendar extends AppCompatActivity {
         }
         cursor.close();
 
+
+
+
+        BaseCalendarEvent event;
+
         for (int i = 0; i < tasks.length; i++){
             Task task = tasks[i];
             String deadline = task.getDeadline()+"/";
@@ -52,35 +64,55 @@ public class Calendar extends AppCompatActivity {
             int month = 0;
             int day = 0;
 
-            WeekViewEvent event;
-
             for (int j = 0; j < deadline.length(); i++){
                 if (deadline.charAt(j) == '/') {
-                    if (year == 0) {
-                        year = Integer.parseInt(deadline.substring(counter,j));
+                    if (day == 0) {
+                        day = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
                     } else if (month == 0) {
                         month = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
-                    } else if (day == 0) {
-                        day = Integer.parseInt(deadline.substring(counter,j));
+                    } else if (year == 0) {
+                        year = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
                     }
                 }
             }
 
-            event = new WeekViewEvent(task.getId(),task.getTitle(), year, month, day, 19,0,year,month,day,20,0);
-            events.add(event);
+            Calendar time = Calendar.getInstance();
+            time.add(Calendar.YEAR, year);
+            time.add(Calendar.MONTH, month);
+            time.add(Calendar.DAY_OF_MONTH, day);
 
+            event = new BaseCalendarEvent(task.getTitle(), task.getDescription(), "Home", Color.CYAN, time, time,true);
+            events.add(event);
         }
 
-        MonthLoader.MonthChangeListener listener = new MonthLoader.MonthChangeListener() {
-            @Override
-            public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                return events;
-            }
-        };
+        Calendar lowerBound = Calendar.getInstance();
+        lowerBound.add(Calendar.YEAR,2017);
+        lowerBound.add(Calendar.MONTH,10);
+        lowerBound.add(Calendar.DAY_OF_MONTH, 1);
 
-        view.setMonthChangeListener(listener);
+        Calendar upperBound = Calendar.getInstance();
+        upperBound.add(Calendar.YEAR,2018);
+        upperBound.add(Calendar.MONTH, 4);
+        upperBound.add(Calendar.DAY_OF_MONTH, 30);
+
+        view.init(events,lowerBound,upperBound, Locale.getDefault(),this);
+    }
+
+    @Override
+    public void onDaySelected(DayItem dayItem) {
+
+    }
+
+    @Override
+    public void onEventSelected(CalendarEvent event) {
+
+    }
+
+    @Override
+    public void onScrollToDate(Calendar calendar) {
+
     }
 }
