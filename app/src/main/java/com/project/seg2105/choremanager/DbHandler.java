@@ -43,14 +43,18 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String TOOL_ID = "_id";
     public static final String TOOL_NAME = "Name";
     public static final String TOOL_ICON = "Icon_path";
-    //Tools count
-    public static int TOOLS_COUNT = 0;
 
     /*Usage table*/
     public static final String USAGE_TABLE_NAME = "Usage";
     public static final String USAGE_ID = "_id";
     public static final String USAGE_TOOL_ID = "tool_id";
     public static final String USAGE_TASK_ID = "task_id";
+
+    /*Shopping table*/
+    public static final String ITEM_TABLE_NAME = "Item";
+    public static final String ITEM_ID = "_id";
+    public static final String ITEM_NAME = "Name";
+    public static final String ITEM_CATEGORY = "Category";
 
     public static synchronized DbHandler getInstance(Context context) {
         if (singleInstance == null) {
@@ -94,10 +98,16 @@ public class DbHandler extends SQLiteOpenHelper {
                 USAGE_TOOL_ID + " INTEGER NOT NULL, " +
                 USAGE_TASK_ID + " INTEGER NOT NULL);";
 
+        String CREATE_ITEM_TABLE = "CREATE TABLE " + ITEM_TABLE_NAME + "(" +
+                ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ITEM_NAME + " TEXT NOT NULL, " +
+                ITEM_CATEGORY + " TEXT NOT NULL);";
+
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_TASK_TABLE);
         db.execSQL(CREATE_TOOL_TABLE);
         db.execSQL(CREATE_USAGE_TABLE);
+        db.execSQL(CREATE_ITEM_TABLE);
     }
 
     public int insertUser(User user) {
@@ -145,7 +155,6 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public int insertTool(Tool tool) {
-        TOOLS_COUNT++;
         String sql;
         int id;
         ContentValues content = new ContentValues();
@@ -170,6 +179,24 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(USAGE_TOOL_ID, usage.getTool_id());
         content.put(USAGE_TASK_ID, usage.getTask_id());
         singleInstance.getWritableDatabase().insert(USAGE_TABLE_NAME, null, content);
+
+        //return Id
+        sql = "SELECT last_insert_rowid();";
+        Cursor c = singleInstance.getWritableDatabase().rawQuery(sql, null);
+        c.moveToFirst();
+        id = c.getInt(0);
+        c.close();
+        Log.d(id + "", "test");
+        return id;
+    }
+
+    public int insertItem(Item item) {
+        String sql;
+        int id;
+        ContentValues content = new ContentValues();
+        content.put(ITEM_CATEGORY, item.getCategory());
+        content.put(ITEM_NAME, item.getName());
+        singleInstance.getWritableDatabase().insert(ITEM_TABLE_NAME, null, content);
 
         //return Id
         sql = "SELECT last_insert_rowid();";
@@ -268,6 +295,25 @@ public class DbHandler extends SQLiteOpenHelper {
         return usageFound;
     }
 
+    public Item findItem(Item item) {
+        Item itemFound = null;
+        Cursor cursor;
+        cursor = singleInstance.getWritableDatabase().query(
+                DbHandler.ITEM_TABLE_NAME,
+                new String[] {DbHandler.ITEM_ID, DbHandler.ITEM_NAME, DbHandler.ITEM_CATEGORY},
+                DbHandler.ITEM_ID + "=" + item.getId(), null, null, null, null);
+        if(cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            String itemName = cursor.getString(1);
+            String itemCategory = cursor.getString(2);
+            itemFound = new Item(itemName, itemCategory);
+            itemFound.setId(id);
+        }
+        cursor.close();
+        return itemFound;
+    }
+
     public void updateUser(User user) {
         ContentValues content = new ContentValues();
         content.put(USER_NAME, user.getName());
@@ -324,6 +370,18 @@ public class DbHandler extends SQLiteOpenHelper {
         );
     }
 
+    public void updateItem(Item item) {
+        ContentValues content = new ContentValues();
+        content.put(ITEM_NAME, item.getName());
+        content.put(ITEM_CATEGORY, item.getCategory());
+        singleInstance.getWritableDatabase().update(
+                ITEM_TABLE_NAME,
+                content,
+                ITEM_ID + "=" + item.getId(),
+                null
+        );
+    }
+
     public void deleteUser(User user) {
         singleInstance.getWritableDatabase().delete(
                 USER_TABLE_NAME,
@@ -339,7 +397,6 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public void deleteTool(Tool tool) {
-        TOOLS_COUNT--;
         singleInstance.getWritableDatabase().delete(
                 TOOL_TABLE_NAME,
                 TOOL_ID + "=" + tool.getId(),
@@ -354,12 +411,21 @@ public class DbHandler extends SQLiteOpenHelper {
         );
     }
 
+    public void deleteItem(Item item) {
+        singleInstance.getWritableDatabase().delete(
+                ITEM_TABLE_NAME,
+                ITEM_ID + "=" + item.getId(),
+                null
+        );
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TASK_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TOOL_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + USAGE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ITEM_TABLE_NAME);
         onCreate(db);
     }
 }

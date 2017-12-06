@@ -33,6 +33,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //TODO: Set user's name and avatar
+
+
+        //TODO: List of all user in drwer layout
+
+
+        //TODO: Map drawer's items to what they do
+
         //Current user
         currentUser.setId(2);
 
@@ -49,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         PagerAdapter pageAdapter = new PagerAdapter(getSupportFragmentManager());
         pageAdapter.addFragment(new TaskFragment(), "Tasks");
         pageAdapter.addFragment(new PeopleFragment(), "People");
+        pageAdapter.addFragment(new ShoppingFragment(), "Shopping");
 
         //Setting the adapter of our ViewPager
         ViewPager viewPager = findViewById(R.id.pager);
@@ -157,9 +166,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } /*else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
