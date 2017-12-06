@@ -51,7 +51,7 @@ public class CreateUser extends AppCompatActivity {
 
         boolean meetsCriteria = (!username.isEmpty() && !password.isEmpty()
                 && !confirm.isEmpty() && !recovery.isEmpty()
-                && group.getCheckedRadioButtonId() != -1);
+                && group.getCheckedRadioButtonId() != -1 && (password.equals(confirm)));
 
         if (meetsCriteria) {
             String avatar;
