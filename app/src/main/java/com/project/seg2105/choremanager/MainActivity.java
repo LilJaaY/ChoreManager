@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.schedule) {
-            startActivity(new Intent(this, Calendar.class));
+            startActivity(new Intent(this, ScheduleView.class));
 
         } else if (id == R.id.delete_shopping) {
             DbHandler.getInstance(this).getWritableDatabase().execSQL("DELETE FROM " + DbHandler.ITEM_TABLE_NAME + ";");
