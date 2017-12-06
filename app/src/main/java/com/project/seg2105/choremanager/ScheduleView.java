@@ -1,9 +1,11 @@
 package com.project.seg2105.choremanager;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.github.tibolte.agendacalendarview.AgendaCalendarView;
 import com.github.tibolte.agendacalendarview.CalendarPickerController;
@@ -29,13 +31,19 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_view);
 
+        //setting up back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Schedule");
+
         view = findViewById(R.id.agendaCalendar);
         events = new ArrayList<>();
         tasks = new ArrayList<>();
 
-        String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + ";";
+        String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + " WHERE " + DbHandler.TASK_STATUS
+                + "='" + Task.Status.UNASSIGNED.toString() + "' OR " + DbHandler.TASK_STATUS
+                + "='" + Task.Status.ASSIGNED.toString() + "';";
         Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
-        for(int i = 0; i < 500; i++) {
+        for(int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             int creatorId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_CREATOR_ID));
             int assigneeId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ASSIGNEE_ID));
@@ -79,25 +87,34 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
             }
 
             Calendar time = Calendar.getInstance();
-            time.add(Calendar.YEAR, year);
-            time.add(Calendar.MONTH, month);
-            time.add(Calendar.DAY_OF_MONTH, day);
+            time.set(Calendar.YEAR, year);
+            time.set(Calendar.MONTH, month-1); //because months are zero based.
+            time.set(Calendar.DAY_OF_MONTH, day);
 
             event = new BaseCalendarEvent(task.getTitle(), task.getDescription(), "Home", Color.CYAN, time, time,true);
             events.add(event);
         }
 
         Calendar lowerBound = Calendar.getInstance();
-        lowerBound.add(Calendar.YEAR,2017);
-        lowerBound.add(Calendar.MONTH,12);
-        lowerBound.add(Calendar.DAY_OF_MONTH, 1);
+        lowerBound.set(Calendar.YEAR,2017);
+        lowerBound.set(Calendar.MONTH,11);
+        lowerBound.set(Calendar.DAY_OF_MONTH, 1);
 
         Calendar upperBound = Calendar.getInstance();
-        upperBound.add(Calendar.YEAR,2018);
-        upperBound.add(Calendar.MONTH, 4);
-        upperBound.add(Calendar.DAY_OF_MONTH, 30);
+        upperBound.set(Calendar.YEAR,2018);
+        upperBound.set(Calendar.MONTH, 4);
+        upperBound.set(Calendar.DAY_OF_MONTH, 30);
 
         view.init(events,lowerBound,upperBound, Locale.getDefault(),this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+        }
+        return true;
     }
 
     @Override
