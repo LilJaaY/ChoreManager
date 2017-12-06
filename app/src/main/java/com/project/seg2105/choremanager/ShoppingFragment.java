@@ -130,11 +130,13 @@ public class ShoppingFragment extends Fragment {
                 + DbHandler.ITEM_CATEGORY + "='Materials';";
         materialsCursor = DbHandler.getInstance(getActivity()).getWritableDatabase().rawQuery(sql, null);
         materialsAdapter.changeCursor(materialsCursor);
+        materialsCheckBoxStates = new SparseBooleanArray();
 
         sql = "SELECT * FROM " + DbHandler.ITEM_TABLE_NAME + " WHERE "
                 + DbHandler.ITEM_CATEGORY + "='Groceries';";
         groceriesCursor = DbHandler.getInstance(getActivity()).getWritableDatabase().rawQuery(sql, null);
         groceriesAdapter.changeCursor(groceriesCursor);
+        groceriesCheckBoxStates = new SparseBooleanArray();
     }
 
     @Override
