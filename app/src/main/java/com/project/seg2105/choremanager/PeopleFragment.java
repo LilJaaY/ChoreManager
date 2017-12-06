@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import static android.app.Activity.RESULT_FIRST_USER;
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by jalilcompaore on 05/11/17.
  */
@@ -36,7 +39,7 @@ public class PeopleFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.people_fragment, container, false);
 
-        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Person 3", "password", "girl_1", 0)) + "");
+        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Person 4", "password", "girl_1", 0)) + "");
 
         //We create a SimpleCursorAdapter without a cursor for now.
         //The cursor will be provided in the onLoadFinished method below.
@@ -60,6 +63,7 @@ public class PeopleFragment extends Fragment implements
                 int userId = Integer.parseInt(id.getText().toString());
                 Intent intent = new Intent(getActivity(), UserTask.class);
                 intent.putExtra("UserID", userId);
+                intent.putExtra("CurrentUser", ((MainActivity)getActivity()).currentUser.getId());
                 startActivityForResult(intent, 1);
             }
         });
@@ -87,6 +91,14 @@ public class PeopleFragment extends Fragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ((MainActivity)getActivity()).notifyFragments();
+        switch (resultCode) {
+            case RESULT_OK:
+                ((MainActivity)getActivity()).notifyFragments();
+                break;
+            case RESULT_FIRST_USER:
+                User user = new User();
+                user.setId(data.getIntExtra("Id", 1));
+                ((MainActivity)getActivity()).setUpCurrentUser(user);
+        }
     }
 }

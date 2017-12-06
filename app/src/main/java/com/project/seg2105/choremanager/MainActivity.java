@@ -1,5 +1,6 @@
 package com.project.seg2105.choremanager;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.SimpleCursorTreeAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +30,7 @@ public class MainActivity extends AppCompatActivity
 
     private TaskFragment taskFragment;
     private PeopleFragment peopleFragment;
+    private PagerAdapter pageAdapter;
     public User currentUser = new User("test", "test", "test", 0);
 
     @Override
@@ -33,17 +40,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO: Set user's name and avatar
-
-
-        //TODO: List of all user in drwer layout
-
-
-        //TODO: Map drawer's items to what they do
-
-        //Current user
-        currentUser.setId(2);
-
+        //Setting up drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -53,11 +50,25 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        //TODO: List of all user in drawer layout
+
+
+        //TODO: Map drawer's items to what they do
+
         //Page adapter for our ViewPager
-        PagerAdapter pageAdapter = new PagerAdapter(getSupportFragmentManager());
+        pageAdapter = new PagerAdapter(getSupportFragmentManager());
         pageAdapter.addFragment(new TaskFragment(), "Tasks");
         pageAdapter.addFragment(new PeopleFragment(), "People");
         pageAdapter.addFragment(new ShoppingFragment(), "Shopping");
+
+        //Retrieving user
+        User user = new User();
+        user.setId(getIntent().getIntExtra("Id", 1));
+        setUpCurrentUser(user);
+
+        //Set user's name and avatar
+        setUpCurrentUser(currentUser);
 
         //Setting the adapter of our ViewPager
         ViewPager viewPager = findViewById(R.id.pager);
@@ -111,11 +122,37 @@ public class MainActivity extends AppCompatActivity
         public int getCount() {
             return fragments.size();
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
     }
 
     public void notifyFragments() {
         peopleFragment.getLoaderManager().restartLoader(0, null, peopleFragment);
         taskFragment.refreshUI();
+    }
+
+    public void setUpCurrentUser(User user) {
+        /*currentUser.setId(user.getId());
+        currentUser.setName(user.getName());
+        currentUser.setAvatar(user.getAvatar());
+        currentUser.setPassword(user.getPassword());
+        currentUser.setPoints(user.getPoints());*/
+
+        currentUser = DbHandler.getInstance(this).findUser(user);
+
+        //Set user's name and avatar
+        View header = ((NavigationView)findViewById(R.id.nav_view)).getHeaderView(0);
+        ImageView avatar = header.findViewById(R.id.imageView);
+        avatar.setImageResource(getResources().getIdentifier(currentUser.getAvatar(), "drawable", getPackageName()));
+
+        TextView name = header.findViewById(R.id.name);
+        name.setText(currentUser.getName());
+
+        //refresh fragments
+        pageAdapter.notifyDataSetChanged();
     }
 
     @Override

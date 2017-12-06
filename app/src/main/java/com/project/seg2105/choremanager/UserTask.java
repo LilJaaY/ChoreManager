@@ -1,8 +1,10 @@
 package com.project.seg2105.choremanager;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 public class UserTask extends AppCompatActivity {
     private User user;
+    private int currentUserId;
     private Cursor cursor;
     private SimpleCursorAdapter tasks;
 
@@ -24,6 +27,7 @@ public class UserTask extends AppCompatActivity {
 
         //Retrieving the user's ID from the intent
         int userId = getIntent().getIntExtra("UserID", 0);
+        currentUserId = getIntent().getIntExtra("CurrentUser", 0);
 
         //Retrieving the user from the db
         user = new User();
@@ -85,9 +89,25 @@ public class UserTask extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+
+        if(user.getId() != currentUserId) {
+            getMenuInflater().inflate(R.menu.user_task_menu, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            setResult(RESULT_OK);
+            finish();
+        } else if(id == R.id.action_switch) {
+            Intent intent = getIntent().putExtra("Id", user.getId());
+            setResult(RESULT_FIRST_USER, intent);
             finish();
         }
         return true;
