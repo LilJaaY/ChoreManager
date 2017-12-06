@@ -24,4 +24,12 @@
     <string name="create_user">Create New User</string>
 
     <string name="deadline">Deadline\n%1$s %2$d, %3$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="categories">
+        <item>Materials</item>
+        <item>Groceries</item>
+    </string-array>
 </resources>

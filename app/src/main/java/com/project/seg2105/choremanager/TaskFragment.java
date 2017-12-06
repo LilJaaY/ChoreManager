@@ -35,8 +35,7 @@ public class TaskFragment extends Fragment implements
     private SimpleCursorAdapter adapter;
 
     private static final int CREATE_TASK_REQUEST = 1;
-    private static final int EDIT_TASK_REQUEST = 2;
-    private static final int VIEW_TASK_REQUEST = 3;
+    private static final int VIEW_TASK_REQUEST = 2;
 
     @Nullable
     @Override
@@ -51,7 +50,7 @@ public class TaskFragment extends Fragment implements
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DbHandler.getInstance(getActivity()).insertTask(new Task(1, 1, "Task C", "No desc", "Test note","Get the trash out", ""));
+                DbHandler.getInstance(getActivity()).insertTask(new Task(1, 1, "Task C", "No desc", "Test note","Assigned", "10/12/2017", 300));
                 ((MainActivity)getActivity()).notifyFragments();
                 Toast.makeText(getActivity(), "Working!", Toast.LENGTH_LONG).show();
             }
@@ -83,8 +82,11 @@ public class TaskFragment extends Fragment implements
             @Override
             public boolean setViewValue(View view, Cursor cursor, int i) {
                 boolean b = view.getId() == R.id.avatar;
+                //If the view is the avatar's ImageView
                 if(view.getId() == R.id.avatar) {
-                    if(cursor.isNull(i)) {
+                    //If the task is unassigned
+                    if(/*cursor.getString(cursor.getColumnIndex(DbHandler.TASK_STATUS)).equals(Task.Status.UNASSIGNED.toString())*/
+                            cursor.isNull(i) || cursor.getInt(i) < 0) {
                         ((ImageView)(view)).setImageResource(R.drawable.question_mark_button);
                         return true;
                     }
@@ -100,6 +102,7 @@ public class TaskFragment extends Fragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.taskId);
                 int taskId = Integer.parseInt(id.getText().toString());
+                //TODO: CHANGE LATER
                 Intent intent = new Intent(getActivity(), ViewTask.class);
                 intent.putExtra("TaskID", taskId);
                 startActivityForResult(intent, VIEW_TASK_REQUEST);
@@ -144,10 +147,10 @@ public class TaskFragment extends Fragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> loader;
         if(id == 0) {
-            loader = new MyCursorLoader(getActivity(), MyCursorLoader.ALL_TASKS);
+            loader = new MyCursorLoader(getActivity(), MyCursorLoader.ALL_TASKS_AVAILABLE);
         } else {
             User currentUser = ((MainActivity)getActivity()).currentUser;
-            loader = new MyCursorLoader(getActivity(), MyCursorLoader.ALL_TASKS_FOR_PARTICULAR_USER, currentUser);
+            loader = new MyCursorLoader(getActivity(), MyCursorLoader.ALL_TASKS_FOR_PARTICULAR_ASSIGNEE, currentUser);
         }
         return loader;
     }
@@ -165,18 +168,8 @@ public class TaskFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //update UI
-        switch (requestCode) {
-            case CREATE_TASK_REQUEST:
-                ((MainActivity)getActivity()).notifyFragments();
-                Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
-                break;
-            case EDIT_TASK_REQUEST:
-                break;
-            case VIEW_TASK_REQUEST:
-                break;
-            default: break;
-        }
-
+        ((MainActivity)getActivity()).notifyFragments();
+        Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
     }
 }
 

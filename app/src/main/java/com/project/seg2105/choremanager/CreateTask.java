@@ -12,6 +12,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -34,26 +36,56 @@ import java.util.Locale;
 public class CreateTask extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
-    private static final Calendar CALENDAR = Calendar.getInstance();
-    private SimpleCursorAdapter toolsAdapter;
+    protected static final Calendar CALENDAR = Calendar.getInstance();
+    protected SimpleCursorAdapter toolsAdapter;
     private SimpleCursorAdapter peopleAdapter;
+    protected Spinner spinner;
+    protected ArrayList<Boolean> checkBoxStates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
 
+        //Default reward value
+        final TextView reward = findViewById(R.id.reward);
+        reward.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().isEmpty()) {
+                    reward.setText(0+"");
+                }
+            }
+        });
+
         //Intialize equipments' listview
         String sql = "SELECT * FROM " + DbHandler.TOOL_TABLE_NAME + ";";
-        Cursor cursor = DbHandler.getInstance(this).getReadableDatabase().rawQuery(sql, null);
+        Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
         int toolsCount = cursor.getCount();
         cursor.close();
         ListView listView = findViewById(R.id.tools);
+
+        //Initializing checkboxes' states
+        checkBoxStates = new ArrayList<>();
+        for(int i = 0; i < toolsCount; i++) {
+            checkBoxStates.add(i, false);
+        }
+
         //Using custom adapter defined inside activity code
         toolsAdapter = new CheckBoxAdapter(this,
                 R.layout.tool_row, null,
                 new String[] {DbHandler.TOOL_ID, DbHandler.TOOL_NAME, DbHandler.TOOL_ICON},
-                new int[] { R.id.toolId, R.id.name, R.id.icon}, 0, toolsCount) {
+                new int[] { R.id.toolId, R.id.name, R.id.icon}, 0) {
 
             @Override
             public void setViewImage(ImageView v, String value) {
@@ -68,7 +100,7 @@ public class CreateTask extends AppCompatActivity implements
         getSupportActionBar().setTitle("Create a new task");
 
         //Initializing spinner
-        Spinner spinner = findViewById(R.id.users);
+        spinner = findViewById(R.id.users);
         peopleAdapter = new SimpleCursorAdapter(this,
                 R.layout.people_row_2, null,
                 new String[] {DbHandler.USER_ID, DbHandler.USER_AVATAR, DbHandler.USER_NAME},
@@ -88,14 +120,10 @@ public class CreateTask extends AppCompatActivity implements
 
     }
 
-    private static class CheckBoxAdapter extends SimpleCursorAdapter {
-        private ArrayList<Boolean> checkBoxStates = new ArrayList<>();
+    protected class CheckBoxAdapter extends SimpleCursorAdapter {
 
-        CheckBoxAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, int toolsCount) {
+        CheckBoxAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
-            for(int i = 0; i < toolsCount; i++) {
-                checkBoxStates.add(i, false);
-            }
         }
 
         @Override
@@ -125,22 +153,22 @@ public class CreateTask extends AppCompatActivity implements
         return true;
     }
 
-    public void onCreateTaskClick(View view) {
+    public void onSubmitClick(View view) {
         /*Inserting the task*/
         Task task;
         int taskId;
         String title = ((EditText)findViewById(R.id.title)).getText().toString();
 //        make sure it is not empty
-//        int points = Integer.parseInt(((EditText)findViewById(R.id.points)).getText().toString());
+        int points = Integer.parseInt(((EditText)findViewById(R.id.reward)).getText().toString());
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
         String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
         if(assigneeId > 0) {
             //TODO: change later
-            task = new Task(1, assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date);
+            task = new Task(1, assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date, points);
         } else {
-            task = new Task(1, assigneeId, title, description, note, Task.Status.UNASSIGNED.toString(), date);
+            task = new Task(1, title, description, note, Task.Status.UNASSIGNED.toString(), date, points);
         }
         taskId = DbHandler.getInstance(this).insertTask(task);
 
@@ -151,7 +179,6 @@ public class CreateTask extends AppCompatActivity implements
             CheckBox checkBox = v.findViewById(R.id.checkbox);
             if(checkBox.isChecked()) {
                 Usage usage;
-                TextView t = v.findViewById(R.id.toolId);
                 int toolId = Integer.parseInt(((TextView)(v.findViewById(R.id.toolId))).getText().toString());
                 usage = new Usage(toolId, taskId);
                 DbHandler.getInstance(this).insertUsage(usage);
@@ -194,7 +221,7 @@ public class CreateTask extends AppCompatActivity implements
                         CALENDAR.get(Calendar.DAY_OF_MONTH),
                         CALENDAR.get(Calendar.YEAR)));
             } else {
-                Toast.makeText(getActivity(), "You can't set the deadline in the past! C'mon!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "You can't set the deadline in the past!", Toast.LENGTH_LONG).show();
             }
         }
     }

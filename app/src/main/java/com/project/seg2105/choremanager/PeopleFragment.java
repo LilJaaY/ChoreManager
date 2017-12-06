@@ -1,6 +1,7 @@
 package com.project.seg2105.choremanager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
@@ -15,9 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 /**
  * Created by jalilcompaore on 05/11/17.
@@ -33,15 +36,15 @@ public class PeopleFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.people_fragment, container, false);
 
-        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Peerson 4", "password", "girl_1")) + "");
+        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Person 3", "password", "girl_1", 0)) + "");
 
         //We create a SimpleCursorAdapter without a cursor for now.
         //The cursor will be provided in the onLoadFinished method below.
         ListView users = view.findViewById(R.id.userList);
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.people_row, null,
-                new String[] { DbHandler.USER_NAME, "TasksCount", DbHandler.USER_ID, DbHandler.USER_AVATAR },
-                new int[] { R.id.name, R.id.tasksCount, R.id.userId, R.id.avatar }, 0){
+                new String[] { DbHandler.USER_NAME, "TasksCount", DbHandler.USER_ID, DbHandler.USER_AVATAR, DbHandler.TASK_TITLE },
+                new int[] { R.id.name, R.id.tasksCount, R.id.userId, R.id.avatar, R.id.nextTask }, 0){
             @Override
             public void setViewImage(ImageView v, String value) {
                 //Setting the src attribute of the ImageView
@@ -49,6 +52,17 @@ public class PeopleFragment extends Fragment implements
             }
         };
         users.setAdapter(adapter);
+
+        users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView id = view.findViewById(R.id.userId);
+                int userId = Integer.parseInt(id.getText().toString());
+                Intent intent = new Intent(getActivity(), UserTask.class);
+                intent.putExtra("UserID", userId);
+                startActivityForResult(intent, 1);
+            }
+        });
 
         //This will call the onCreateLoader method below.
         getLoaderManager().initLoader(0, null, this);
@@ -63,20 +77,16 @@ public class PeopleFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        MatrixCursor extra = new MatrixCursor(new String[] {"TasksCount",
-                DbHandler.USER_ID,
-                DbHandler.USER_NAME,
-                DbHandler.USER_PASSWORD,
-                DbHandler.USER_AVATAR});
-        extra.addRow(new String[] {"0", "-1", "Nobody", "pass", "question_mark_button"});
-        Cursor[] cursors = { extra, data };
-        Cursor extendedCursor = new MergeCursor(cursors);
-        adapter.swapCursor(extendedCursor);
-        /*adapter.swapCursor(data);*/
+        adapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ((MainActivity)getActivity()).notifyFragments();
     }
 }

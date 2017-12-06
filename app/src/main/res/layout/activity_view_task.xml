@@ -57,21 +57,50 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?android:listPreferredItemHeight">
-        <ImageView
-            android:id="@+id/dateIcon"
+        <LinearLayout
+            android:id="@+id/points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_today_black_24dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="10dp"/>
-        <TextView
-            android:id="@+id/deadline"
-            android:text="Today"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/dateIcon"
+            android:layout_marginTop="5dp">
+            <ImageView
+                android:id="@+id/gift"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_card_giftcard_black_24dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"/>
+            <TextView
+                android:id="@+id/reward"
+                android:text="250"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text=" points"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="7dp"
+            android:layout_below="@+id/points"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/dateIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_today_black_24dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"/>
+            <TextView
+                android:id="@+id/deadline"
+                android:text="Today"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/creatorIcon"
