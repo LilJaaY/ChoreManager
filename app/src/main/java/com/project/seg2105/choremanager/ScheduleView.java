@@ -19,9 +19,10 @@ import java.util.Locale;
 public class ScheduleView extends AppCompatActivity implements CalendarPickerController{
 
 
-    Task[] tasks;
+    List<Task> tasks;
     List<CalendarEvent> events;
     AgendaCalendarView view;
+    Task t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +31,10 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
 
         view = findViewById(R.id.agendaCalendar);
         events = new ArrayList<>();
+        tasks = new ArrayList<>();
 
         String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + ";";
         Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
-        tasks = new Task[500];
         for(int i = 0; i < 500; i++) {
             cursor.moveToNext();
             int creatorId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_CREATOR_ID));
@@ -44,18 +45,16 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
             String status = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_STATUS));
             String deadline = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_DEADLINE));
             int reward = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_REWARD));
-            tasks[i] = new Task(creatorId, assigneeId, title, description, note, status, deadline, reward);
-            tasks[i].setId(cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ID)));
+            t = new Task(creatorId, assigneeId, title, description, note, status, deadline, reward);
+            t.setId(cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ID)));
+            tasks.add(t);
         }
         cursor.close();
 
-
-
-
         BaseCalendarEvent event;
 
-        for (int i = 0; i < tasks.length; i++){
-            Task task = tasks[i];
+        for (int i = 0; i < tasks.size(); i++){
+            Task task = tasks.get(i);
             String deadline = task.getDeadline()+"/";
 
             int counter = 0;
@@ -64,7 +63,7 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
             int month = 0;
             int day = 0;
 
-            for (int j = 0; j < deadline.length(); i++){
+            for (int j = 0; j < deadline.length(); j++){
                 if (deadline.charAt(j) == '/') {
                     if (day == 0) {
                         day = Integer.parseInt(deadline.substring(counter,j));
@@ -90,7 +89,7 @@ public class ScheduleView extends AppCompatActivity implements CalendarPickerCon
 
         Calendar lowerBound = Calendar.getInstance();
         lowerBound.add(Calendar.YEAR,2017);
-        lowerBound.add(Calendar.MONTH,10);
+        lowerBound.add(Calendar.MONTH,12);
         lowerBound.add(Calendar.DAY_OF_MONTH, 1);
 
         Calendar upperBound = Calendar.getInstance();
