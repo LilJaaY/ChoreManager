@@ -14,11 +14,12 @@ public class User {
 
     public User() {}
 
-    public User(String name, String password, String avatar, int points) {
+    public User(String name, String password, String avatar, int points, String accountRecovery) {
         this.avatar = avatar;
         this.password = password;
         this.name = name;
         this.points = points;
+        this.accountRecovery = accountRecovery;
     }
 
     public int getId() {

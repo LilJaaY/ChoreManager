@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity
     private PeopleFragment peopleFragment;
     private ShoppingFragment shoppingFragment;
     private PagerAdapter pageAdapter;
-    public User currentUser = new User("test buddy", "test", "boy", 0);
+    public User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
