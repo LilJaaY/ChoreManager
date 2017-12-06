@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +29,13 @@ public class ShoppingFragment extends Fragment {
     private Spinner category;
     private SimpleCursorAdapter groceriesAdapter;
     private SimpleCursorAdapter materialsAdapter;
-    private final static int MAX_ITEMS_COLLECTION_SIZE = 20;
-    private ArrayList<Boolean> materialsCheckBoxStates = new ArrayList<>();
-    private ArrayList<Boolean> groceriesCheckBoxStates = new ArrayList<>();
+    private SparseBooleanArray materialsCheckBoxStates = new SparseBooleanArray();
+    private SparseBooleanArray groceriesCheckBoxStates = new SparseBooleanArray();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_shopping, container, false);
-
-        //Initializing checkboxes' states
-        for(int i = 0; i < MAX_ITEMS_COLLECTION_SIZE; i++) {
-            materialsCheckBoxStates.add(i, false);
-            groceriesCheckBoxStates.add(i, false);
-        }
 
         //Populating the Gridviews
         GridView materialsGrid = v.findViewById(R.id.materials);
@@ -56,9 +50,9 @@ public class ShoppingFragment extends Fragment {
                 checkBox.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         if(((CheckBox)v).isChecked()){
-                            materialsCheckBoxStates.set(position, true);
+                            materialsCheckBoxStates.append(position, true);
                         }else{
-                            materialsCheckBoxStates.set(position, false);
+                            materialsCheckBoxStates.append(position, false);
                         }
                     }
                 });
@@ -80,9 +74,9 @@ public class ShoppingFragment extends Fragment {
                 checkBox.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         if(((CheckBox)v).isChecked()){
-                            groceriesCheckBoxStates.set(position, true);
+                            groceriesCheckBoxStates.append(position, true);
                         }else{
-                            groceriesCheckBoxStates.set(position, false);
+                            groceriesCheckBoxStates.append(position, false);
                         }
                     }
                 });
