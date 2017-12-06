@@ -39,8 +39,7 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
 
             Intent intent = new Intent(Authentication.this, MainActivity.class);
             intent.putExtra("Id", id);
-            startActivity(intent);
-            finish();
+            startActivityForResult(intent, 1);
         } else {
             usernameText.getText().clear();
             passwordText.getText().clear();
@@ -72,5 +71,14 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
             Toast.makeText(getApplicationContext(), "No matching record.", Toast.LENGTH_LONG).show();
         }
         cursor.close();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != RESULT_OK) {
+            finish();
+        }
+        usernameText.setText("");
+        passwordText.setText("");
     }
 }
