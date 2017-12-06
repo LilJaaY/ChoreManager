@@ -217,7 +217,10 @@ public class CreateTask extends AppCompatActivity implements
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             Calendar today = Calendar.getInstance();
-            if(today.get(Calendar.YEAR) <= year && today.get(Calendar.MONTH) <= month && today.get(Calendar.DAY_OF_MONTH) <= day) {
+            int dateSet = year*10000 + month*100 + day;
+            int currentDate = today.get(Calendar.YEAR)*10000 + today.get(Calendar.MONTH)+100
+                    + today.get(Calendar.DAY_OF_MONTH);
+            if(currentDate <= dateSet) {
                 CALENDAR.set(Calendar.YEAR, year);
                 CALENDAR.set(Calendar.MONTH, month);
                 CALENDAR.set(Calendar.DAY_OF_MONTH, day);
@@ -227,8 +230,9 @@ public class CreateTask extends AppCompatActivity implements
                         CALENDAR.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US),
                         CALENDAR.get(Calendar.DAY_OF_MONTH),
                         CALENDAR.get(Calendar.YEAR)));
+
             } else {
-                Toast.makeText(getActivity(), "You can't set the deadline in the past!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
             }
         }
     }
