@@ -25,6 +25,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public static final String USER_PASSWORD = "Password";
     public static final String USER_AVATAR = "Avatar_path";
     public static final String USER_POINTS = "Points";
+    public static final String USER_RECOVERY = "Recovery";
 
     /*Task table*/
     public static final String TASK_TABLE_NAME = "Task";
@@ -75,7 +76,8 @@ public class DbHandler extends SQLiteOpenHelper {
                 USER_NAME + " TEXT NOT NULL, " +
                 USER_PASSWORD + " TEXT NOT NULL, " +
                 USER_AVATAR + " TEXT, " +
-                USER_POINTS + " INTEGER);";
+                USER_POINTS + " TEXT, " +
+                USER_RECOVERY + " TEXT NOT NULL);";
 
         String CREATE_TASK_TABLE = "CREATE TABLE " + TASK_TABLE_NAME + "(" +
                 TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -132,6 +134,7 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(USER_PASSWORD, user.getPassword());
         content.put(USER_AVATAR, user.getAvatar());
         content.put(USER_POINTS, user.getPoints());
+        content.put(USER_RECOVERY, user.getAccountRecovery());
         singleInstance.getWritableDatabase().insert(USER_TABLE_NAME, null, content);
 
         //return Id
@@ -236,7 +239,8 @@ public class DbHandler extends SQLiteOpenHelper {
             String password = cursor.getString(2);
             String avatar = cursor.getString(3);
             int points = cursor.getInt(4);
-            userFound = new User(name, password, avatar, points);
+            String recovery = cursor.getString(5);
+            userFound = new User(name, password, avatar, points, recovery);
             userFound.setId(id);
         }
         cursor.close();
@@ -334,6 +338,7 @@ public class DbHandler extends SQLiteOpenHelper {
         content.put(USER_PASSWORD, user.getPassword());
         content.put(USER_AVATAR, user.getAvatar());
         content.put(USER_POINTS, user.getPoints());
+        content.put(USER_RECOVERY, user.getAccountRecovery());
         singleInstance.getWritableDatabase().update(
                 USER_TABLE_NAME,
                 content,

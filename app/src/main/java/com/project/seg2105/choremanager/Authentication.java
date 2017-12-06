@@ -62,8 +62,15 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
     public void onPosClick(DialogFragment dialog, String user, String recovery){
         String recoveredPassword = "";
 
-        //Todo: (Jalil) Query DB for a user with matching username and recovery input (the ones in this function's listener) and fetch password as string.
-
-        Toast.makeText(getApplicationContext(), recoveredPassword, Toast.LENGTH_LONG).show();
+        String sql = "SELECT * FROM " + DbHandler.USER_TABLE_NAME + " WHERE " + DbHandler.USER_NAME
+                + "='" + user + "' AND " + DbHandler.USER_RECOVERY + "='" + recovery + "';";
+        Cursor cursor = DbHandler.getInstance(this).getReadableDatabase().rawQuery(sql, null);
+        if(cursor.moveToNext()) {
+            recoveredPassword = cursor.getString(cursor.getColumnIndex(DbHandler.USER_PASSWORD));
+            Toast.makeText(getApplicationContext(), recoveredPassword, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "No matching record.", Toast.LENGTH_LONG).show();
+        }
+        cursor.close();
     }
 }

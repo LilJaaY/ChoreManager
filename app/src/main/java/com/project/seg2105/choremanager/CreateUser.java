@@ -87,7 +87,7 @@ public class CreateUser extends AppCompatActivity {
                     avatar = "";
                     break;
             }
-            User user = new User(username, password, avatar, 0);
+            User user = new User(username, password, avatar, 0, recovery);
             DbHandler.getInstance(this).insertUser(user);
             finish();
         } else {
