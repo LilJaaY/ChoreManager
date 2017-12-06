@@ -26,7 +26,8 @@
         <activity android:name=".CreateUser" />
         <activity android:name=".EditTask" />
         <activity android:name=".ViewTask" />
-        <activity android:name=".UserTask"></activity>
+        <activity android:name=".UserTask"/>
+        <activity android:name=".Calendar"/>
     </application>
 
 </manifest>

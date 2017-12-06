@@ -1,5 +1,6 @@
 package com.project.seg2105.choremanager;
 
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -23,6 +24,23 @@ public class Calendar extends AppCompatActivity {
         view = findViewById(R.id.calendar);
 
         //Todo (Jalil) query DB for all tasks and store them in "tasks" array
+        String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + ";";
+        Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
+        tasks = new Task[cursor.getCount()];
+        for(int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToNext();
+            int creatorId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_CREATOR_ID));
+            int assigneeId = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ASSIGNEE_ID));
+            String title = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_TITLE));
+            String description = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_DESC));
+            String note = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_STATUS));
+            String status = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_STATUS));
+            String deadline = cursor.getString(cursor.getColumnIndex(DbHandler.TASK_DEADLINE));
+            int reward = cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_REWARD));
+            tasks[i] = new Task(creatorId, assigneeId, title, description, note, status, deadline, reward);
+            tasks[i].setId(cursor.getInt(cursor.getColumnIndex(DbHandler.TASK_ID)));
+        }
+        cursor.close();
 
         for (int i = 0; i < tasks.length; i++){
             Task task = tasks[i];
