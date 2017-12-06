@@ -1,6 +1,6 @@
 package com.project.seg2105.choremanager;
 
-import android.database.Cursor;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,9 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -30,13 +28,15 @@ public class MainActivity extends AppCompatActivity
 
     private TaskFragment taskFragment;
     private PeopleFragment peopleFragment;
+    private ShoppingFragment shoppingFragment;
     private PagerAdapter pageAdapter;
-    public User currentUser = new User("test", "test", "test", 0);
+    public User currentUser = new User("test buddy", "test", "boy", 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -49,12 +49,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        //TODO: List of all user in drawer layout
-
-
-        //TODO: Map drawer's items to what they do
 
         //Page adapter for our ViewPager
         pageAdapter = new PagerAdapter(getSupportFragmentManager());
@@ -114,6 +108,8 @@ public class MainActivity extends AppCompatActivity
                 case 1:
                     peopleFragment = (PeopleFragment) createdFragment;
                     break;
+                case 2:
+                    shoppingFragment = (ShoppingFragment) createdFragment;
             }
             return createdFragment;
         }
@@ -135,12 +131,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setUpCurrentUser(User user) {
-        /*currentUser.setId(user.getId());
-        currentUser.setName(user.getName());
-        currentUser.setAvatar(user.getAvatar());
-        currentUser.setPassword(user.getPassword());
-        currentUser.setPoints(user.getPoints());*/
-
         currentUser = DbHandler.getInstance(this).findUser(user);
 
         //Set user's name and avatar
@@ -174,17 +164,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -193,22 +174,35 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.open_tasks) {
+            Intent intent = new Intent(this, OpenTasksActivity.class);
+            startActivityForResult(intent, 1);
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.my_tasks) {
+            Intent intent = new Intent(this, MyTasksActivity.class);
+            intent.putExtra("UserId", currentUser.getId());
+            startActivityForResult(intent, 1);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.backlog) {
+            Intent intent = new Intent(this, TasksBacklogActivity.class);
+            startActivity(intent);
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.schedule) {
+            startActivity(new Intent(this, Calendar.class));
 
-        } /*else if (id == R.id.nav_send) {
+        } else if (id == R.id.delete_shopping) {
+            DbHandler.getInstance(this).getWritableDatabase().execSQL("DELETE FROM " + DbHandler.ITEM_TABLE_NAME + ";");
+            shoppingFragment.updateUI();
+        }
 
-        }*/
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        notifyFragments();
     }
 }

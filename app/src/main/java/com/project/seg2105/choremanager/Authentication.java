@@ -28,10 +28,9 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
 
-        //Todo: (Jalil) Query DB for username and password match
-        String sql = "SELECT * FROM " + DbHandler.USAGE_TABLE_NAME + " WHERE "
-                + DbHandler.USER_NAME + "=" + username + " AND " + DbHandler.USER_PASSWORD
-                + "=" + password;
+        String sql = "SELECT * FROM " + DbHandler.USER_TABLE_NAME + " WHERE "
+                + DbHandler.USER_NAME + "='" + username + "' AND " + DbHandler.USER_PASSWORD
+                + "='" + password + "';";
         Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
 
         if(cursor.getCount()>0) {
@@ -41,6 +40,7 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
             Intent intent = new Intent(Authentication.this, MainActivity.class);
             intent.putExtra("Id", id);
             startActivity(intent);
+            finish();
         } else {
             usernameText.getText().clear();
             passwordText.getText().clear();

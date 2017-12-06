@@ -39,8 +39,6 @@ public class PeopleFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.people_fragment, container, false);
 
-        Log.d("test", DbHandler.getInstance(getActivity()).insertUser(new User("Person 4", "password", "girl_1", 0)) + "");
-
         //We create a SimpleCursorAdapter without a cursor for now.
         //The cursor will be provided in the onLoadFinished method below.
         ListView users = view.findViewById(R.id.userList);
@@ -64,7 +62,7 @@ public class PeopleFragment extends Fragment implements
                 Intent intent = new Intent(getActivity(), UserTask.class);
                 intent.putExtra("UserID", userId);
                 intent.putExtra("CurrentUser", ((MainActivity)getActivity()).currentUser.getId());
-                startActivityForResult(intent, 1);
+                PeopleFragment.this.startActivityForResult(intent, 1);
             }
         });
 

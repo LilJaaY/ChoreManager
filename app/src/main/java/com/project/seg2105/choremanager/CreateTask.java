@@ -42,10 +42,16 @@ public class CreateTask extends AppCompatActivity implements
     protected Spinner spinner;
     protected ArrayList<Boolean> checkBoxStates;
 
+    private User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+
+        //Retrieving user's id
+        user = new User();
+        user.setId(getIntent().getIntExtra("Id", 1));
 
         //Default reward value
         final TextView reward = findViewById(R.id.reward);
@@ -163,12 +169,12 @@ public class CreateTask extends AppCompatActivity implements
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
-        String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
+        int month = CALENDAR.get(Calendar.MONTH)+1; //because months are zero based
+        String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + month + "/" + CALENDAR.get(Calendar.YEAR);
         if(assigneeId > 0) {
-            //TODO: change later
-            task = new Task(1, assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date, points);
+            task = new Task(user.getId(), assigneeId, title, description, note, Task.Status.ASSIGNED.toString(), date, points);
         } else {
-            task = new Task(1, title, description, note, Task.Status.UNASSIGNED.toString(), date, points);
+            task = new Task(user.getId(), title, description, note, Task.Status.UNASSIGNED.toString(), date, points);
         }
         taskId = DbHandler.getInstance(this).insertTask(task);
 
@@ -185,6 +191,7 @@ public class CreateTask extends AppCompatActivity implements
             }
         }
 
+        setResult(RESULT_OK);
         //go back
         finish();
     }

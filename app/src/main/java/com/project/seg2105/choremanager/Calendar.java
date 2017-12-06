@@ -3,27 +3,32 @@ package com.project.seg2105.choremanager;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Calendar extends AppCompatActivity {
 
     WeekView view;
     Task[] tasks;
-    List<WeekViewEvent> events;
+    List<WeekViewEvent> events = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
 
+        //setting up back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Create a new task");
+
         view = findViewById(R.id.calendar);
 
-        //Todo (Jalil) query DB for all tasks and store them in "tasks" array
         String sql = "SELECT * FROM " + DbHandler.TASK_TABLE_NAME + ";";
         Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
         tasks = new Task[cursor.getCount()];
@@ -54,16 +59,16 @@ public class Calendar extends AppCompatActivity {
 
             WeekViewEvent event;
 
-            for (int j = 0; j < deadline.length(); i++){
+            for (int j = 0; j < deadline.length(); j++){
                 if (deadline.charAt(j) == '/') {
-                    if (year == 0) {
-                        year = Integer.parseInt(deadline.substring(counter,j));
+                    if (day == 0) {
+                        day = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
                     } else if (month == 0) {
                         month = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
-                    } else if (day == 0) {
-                        day = Integer.parseInt(deadline.substring(counter,j));
+                    } else if (year == 0) {
+                        year = Integer.parseInt(deadline.substring(counter,j));
                         counter = j+1;
                     }
                 }
@@ -81,6 +86,17 @@ public class Calendar extends AppCompatActivity {
             }
         };
 
+
+
         view.setMonthChangeListener(listener);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+        }
+        return true;
     }
 }
