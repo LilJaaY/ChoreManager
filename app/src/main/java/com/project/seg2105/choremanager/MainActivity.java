@@ -1,5 +1,6 @@
 package com.project.seg2105.choremanager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,26 +28,19 @@ public class MainActivity extends AppCompatActivity
 
     private TaskFragment taskFragment;
     private PeopleFragment peopleFragment;
-    public User currentUser = new User("test", "test", "test", 0);
+    private ShoppingFragment shoppingFragment;
+    private PagerAdapter pageAdapter;
+    public User currentUser = new User("test buddy", "test", "boy", 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO: Set user's name and avatar
-
-
-        //TODO: List of all user in drwer layout
-
-
-        //TODO: Map drawer's items to what they do
-
-        //Current user
-        currentUser.setId(2);
-
+        //Setting up drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -54,10 +51,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //Page adapter for our ViewPager
-        PagerAdapter pageAdapter = new PagerAdapter(getSupportFragmentManager());
+        pageAdapter = new PagerAdapter(getSupportFragmentManager());
         pageAdapter.addFragment(new TaskFragment(), "Tasks");
         pageAdapter.addFragment(new PeopleFragment(), "People");
         pageAdapter.addFragment(new ShoppingFragment(), "Shopping");
+
+        //Retrieving user
+        User user = new User();
+        user.setId(getIntent().getIntExtra("Id", 1));
+        setUpCurrentUser(user);
+
+        //Set user's name and avatar
+        setUpCurrentUser(currentUser);
 
         //Setting the adapter of our ViewPager
         ViewPager viewPager = findViewById(R.id.pager);
@@ -103,6 +108,8 @@ public class MainActivity extends AppCompatActivity
                 case 1:
                     peopleFragment = (PeopleFragment) createdFragment;
                     break;
+                case 2:
+                    shoppingFragment = (ShoppingFragment) createdFragment;
             }
             return createdFragment;
         }
@@ -111,11 +118,31 @@ public class MainActivity extends AppCompatActivity
         public int getCount() {
             return fragments.size();
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
     }
 
     public void notifyFragments() {
         peopleFragment.getLoaderManager().restartLoader(0, null, peopleFragment);
         taskFragment.refreshUI();
+    }
+
+    public void setUpCurrentUser(User user) {
+        currentUser = DbHandler.getInstance(this).findUser(user);
+
+        //Set user's name and avatar
+        View header = ((NavigationView)findViewById(R.id.nav_view)).getHeaderView(0);
+        ImageView avatar = header.findViewById(R.id.imageView);
+        avatar.setImageResource(getResources().getIdentifier(currentUser.getAvatar(), "drawable", getPackageName()));
+
+        TextView name = header.findViewById(R.id.name);
+        name.setText(currentUser.getName());
+
+        //refresh fragments
+        pageAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -137,17 +164,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -156,22 +174,35 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.open_tasks) {
+            Intent intent = new Intent(this, OpenTasksActivity.class);
+            startActivityForResult(intent, 1);
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.my_tasks) {
+            Intent intent = new Intent(this, MyTasksActivity.class);
+            intent.putExtra("UserId", currentUser.getId());
+            startActivityForResult(intent, 1);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.backlog) {
+            Intent intent = new Intent(this, TasksBacklogActivity.class);
+            startActivity(intent);
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.schedule) {
+            startActivity(new Intent(this, Calendar.class));
 
-        } /*else if (id == R.id.nav_send) {
+        } else if (id == R.id.delete_shopping) {
+            DbHandler.getInstance(this).getWritableDatabase().execSQL("DELETE FROM " + DbHandler.ITEM_TABLE_NAME + ";");
+            shoppingFragment.updateUI();
+        }
 
-        }*/
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        notifyFragments();
     }
 }

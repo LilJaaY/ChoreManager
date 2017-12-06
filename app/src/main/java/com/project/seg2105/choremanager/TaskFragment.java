@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import java.util.Date;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by jalilcompaore on 05/11/17. */
 
@@ -42,17 +44,13 @@ public class TaskFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_fragment, container, false);
 
-        //TODO: remove later
-        Tool tool = new Tool("Hello", "circle_ladder");
-        DbHandler.getInstance(getActivity()).insertTool(tool);
-
-        Button button = view.findViewById(R.id.btn);
+        FloatingActionButton button = view.findViewById(R.id.fab);
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DbHandler.getInstance(getActivity()).insertTask(new Task(1, 1, "Task C", "No desc", "Test note","Assigned", "10/12/2017", 300));
-                ((MainActivity)getActivity()).notifyFragments();
-                Toast.makeText(getActivity(), "Working!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getActivity(), CreateTask.class);
+                intent.putExtra("Id", ((MainActivity)getActivity()).currentUser.getId());
+                startActivityForResult(intent, CREATE_TASK_REQUEST);
             }
         });
 
@@ -85,8 +83,7 @@ public class TaskFragment extends Fragment implements
                 //If the view is the avatar's ImageView
                 if(view.getId() == R.id.avatar) {
                     //If the task is unassigned
-                    if(/*cursor.getString(cursor.getColumnIndex(DbHandler.TASK_STATUS)).equals(Task.Status.UNASSIGNED.toString())*/
-                            cursor.isNull(i) || cursor.getInt(i) < 0) {
+                    if(cursor.isNull(i) || cursor.getInt(i) < 0) {
                         ((ImageView)(view)).setImageResource(R.drawable.question_mark_button);
                         return true;
                     }
@@ -102,7 +99,6 @@ public class TaskFragment extends Fragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView id = view.findViewById(R.id.taskId);
                 int taskId = Integer.parseInt(id.getText().toString());
-                //TODO: CHANGE LATER
                 Intent intent = new Intent(getActivity(), ViewTask.class);
                 intent.putExtra("TaskID", taskId);
                 startActivityForResult(intent, VIEW_TASK_REQUEST);
@@ -112,25 +108,6 @@ public class TaskFragment extends Fragment implements
         //This will call the onCreateLoader method below
         getLoaderManager().initLoader(0, null, this);
 
-        //Button add new task
-        Button buttonAdd = view.findViewById(R.id.button);
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                startActivityForResult(new Intent(getActivity(), CreateTask.class), CREATE_TASK_REQUEST);
-            }
-        });
-        TextView textButton = view.findViewById(R.id.textButton);
-        textButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                startActivityForResult(new Intent(getActivity(), CreateTask.class), CREATE_TASK_REQUEST);
-            }
-        });
         return view;
     }
 
@@ -167,9 +144,11 @@ public class TaskFragment extends Fragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK) {
+            Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
+        }
         //update UI
-        ((MainActivity)getActivity()).notifyFragments();
-        Toast.makeText(getActivity(), "New task added!", Toast.LENGTH_LONG).show();
+        ((MainActivity) getActivity()).notifyFragments();
     }
 }
 

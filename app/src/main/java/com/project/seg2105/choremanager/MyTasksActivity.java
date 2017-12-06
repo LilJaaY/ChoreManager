@@ -1,71 +1,57 @@
 package com.project.seg2105.choremanager;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class UserTask extends AppCompatActivity {
-    private User user;
-    private int currentUserId;
+public class MyTasksActivity extends AppCompatActivity {
+    private SimpleCursorAdapter adapter;
+    private User currentUser = new User();
     private Cursor cursor;
-    private SimpleCursorAdapter tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_task);
+        setContentView(R.layout.activity_my_tasks);
 
-        //Retrieving the user's ID from the intent
-        int userId = getIntent().getIntExtra("UserID", 0);
-        currentUserId = getIntent().getIntExtra("CurrentUser", 0);
-
-        //Retrieving the user from the db
-        user = new User();
-        user.setId(userId);
-        user = DbHandler.getInstance(this).findUser(user);
+        //Setting currentUser's id
+        currentUser.setId(getIntent().getIntExtra("UserId", 1));
+        currentUser = DbHandler.getInstance(this).findUser(currentUser);
 
         //setting up back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(user.getName());
+        getSupportActionBar().setTitle("My tasks");
 
-        //Setting the user's fields
-        ImageView avatar = findViewById(R.id.avatar);
-        avatar.setImageResource(getResources().getIdentifier(user.getAvatar(), "drawable", this.getPackageName()));
-        ((TextView)(findViewById(R.id.name))).setText(user.getName());
-        ((TextView)(findViewById(R.id.userId))).setText(user.getId() + "");
-        ((TextView)(findViewById(R.id.points))).setText(user.getPoints() + "");
+        //Retrieving ListView
+        ListView tasks = findViewById(R.id.tasksList);
 
-        //Displaying the user's tasks
         String sql = "SELECT " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ID + ", "
                 + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", "
                 + DbHandler.USER_AVATAR + ", " + DbHandler.TASK_REWARD + ", " + DbHandler.TASK_STATUS
                 + " FROM " + DbHandler.TASK_TABLE_NAME + ", " + DbHandler.USER_TABLE_NAME
                 + " WHERE " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID
-                + " AND " + DbHandler.TASK_ASSIGNEE_ID + "=" + user.getId() + " AND " + DbHandler.TASK_STATUS
+                + " AND " + DbHandler.TASK_ASSIGNEE_ID + "=" + currentUser.getId() + " AND " + DbHandler.TASK_STATUS
                 + "='" + Task.Status.ASSIGNED.toString() + "';";
         cursor = DbHandler.getInstance(this).getReadableDatabase().rawQuery(sql, null);
-        tasks = new SimpleCursorAdapter(this,
-                R.layout.task_row, cursor,
-                new String[] {DbHandler.TASK_ID, DbHandler.TASK_TITLE, DbHandler.TASK_NOTE, DbHandler.USER_AVATAR},
-                new int[] {R.id.taskId, R.id.title, R.id.note, R.id.avatar}, 0){
+
+        adapter = new SimpleCursorAdapter(this,
+                R.layout.task_row_2, cursor,
+                new String[] {DbHandler.TASK_ID, DbHandler.TASK_TITLE, DbHandler.TASK_NOTE, DbHandler.USER_AVATAR, DbHandler.TASK_REWARD},
+                new int[] {R.id.taskId, R.id.title, R.id.note, R.id.avatar, R.id.reward}, 0){
             @Override
             public void setViewImage(ImageView v, String value) {
                 //Setting the src attribute of the ImageView
-                v.setImageResource(getResources().getIdentifier(value, "drawable", UserTask.this.getPackageName()));
+                v.setImageResource(getResources().getIdentifier(value, "drawable", getPackageName()));
             }
         };
-        ListView tasksList = findViewById(R.id.tasks);
-        tasksList.setAdapter(tasks);
+
+        tasks.setAdapter(adapter);
     }
 
     public void onCompletedClick(View view) {
@@ -74,8 +60,8 @@ public class UserTask extends AppCompatActivity {
         int reward = Integer.parseInt(((TextView)taskRow.findViewById(R.id.reward)).getText().toString());
 
         //Give the points to the user
-        user.setPoints(user.getPoints()+reward);
-        DbHandler.getInstance(this).updateUser(user);
+        currentUser.setPoints(currentUser.getPoints()+reward);
+        DbHandler.getInstance(this).updateUser(currentUser);
 
         //Update task status
         Task task = new Task();
@@ -84,45 +70,30 @@ public class UserTask extends AppCompatActivity {
         task.setStatus(Task.Status.COMPLETED.toString());
         DbHandler.getInstance(this).updateTask(task);
 
-        //Update UI
-        recreate();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-
-        if(user.getId() != currentUserId) {
-            getMenuInflater().inflate(R.menu.user_task_menu, menu);
-            return true;
-        }
-        return false;
+        updateUI();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            setResult(RESULT_OK);
-            finish();
-        } else if(id == R.id.action_switch) {
-            Intent intent = getIntent().putExtra("Id", user.getId());
-            setResult(RESULT_FIRST_USER, intent);
             finish();
         }
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void updateUI() {
         //Requery the cursor
         String sql = "SELECT " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ID + ", "
-                + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", " + DbHandler.USER_AVATAR
+                + DbHandler.TASK_TITLE + ", " +DbHandler.TASK_NOTE + ", "
+                + DbHandler.USER_AVATAR + ", " + DbHandler.TASK_REWARD + ", " + DbHandler.TASK_STATUS
                 + " FROM " + DbHandler.TASK_TABLE_NAME + ", " + DbHandler.USER_TABLE_NAME
                 + " WHERE " + DbHandler.TASK_TABLE_NAME + "." + DbHandler.TASK_ASSIGNEE_ID + "=" + DbHandler.USER_TABLE_NAME + "." + DbHandler.USER_ID
-                + " AND " + DbHandler.TASK_ASSIGNEE_ID + "=" + user.getId() + ";";
+                + " AND " + DbHandler.TASK_ASSIGNEE_ID + "=" + currentUser.getId() + " AND " + DbHandler.TASK_STATUS
+                + "='" + Task.Status.ASSIGNED.toString() + "';";
         cursor = DbHandler.getInstance(this).getReadableDatabase().rawQuery(sql, null);
+        adapter.changeCursor(cursor);
+        //adapter.notifyDataSetChanged();
     }
 
     @Override

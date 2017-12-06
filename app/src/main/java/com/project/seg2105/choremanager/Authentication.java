@@ -2,6 +2,7 @@ package com.project.seg2105.choremanager;
 
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,22 +24,30 @@ public class Authentication extends AppCompatActivity implements PassRecoveryFra
     }
 
     public void login(View view){
+        int id = 0;
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
-        boolean authenticated = false;
 
-        //Todo: (Jalil) Query DB for username and password match
+        String sql = "SELECT * FROM " + DbHandler.USER_TABLE_NAME + " WHERE "
+                + DbHandler.USER_NAME + "='" + username + "' AND " + DbHandler.USER_PASSWORD
+                + "='" + password + "';";
+        Cursor cursor = DbHandler.getInstance(this).getWritableDatabase().rawQuery(sql, null);
 
-        if (authenticated) {
+        if(cursor.getCount()>0) {
+            cursor.moveToNext();
+            id = cursor.getInt(cursor.getColumnIndex(DbHandler.USER_ID));
+
             Intent intent = new Intent(Authentication.this, MainActivity.class);
-            intent.putExtra("Username", username);
+            intent.putExtra("Id", id);
             startActivity(intent);
+            finish();
         } else {
             usernameText.getText().clear();
             passwordText.getText().clear();
 
             Toast.makeText(getApplicationContext(), "Authentication Failed", Toast.LENGTH_SHORT).show();
         }
+        cursor.close();
     }
 
     public void createUser(View view){

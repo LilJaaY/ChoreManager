@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class DbHandler extends SQLiteOpenHelper {
 
-    public static DbHandler singleInstance;
+    private static DbHandler singleInstance;
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "ChoreManager.db";
@@ -108,6 +108,20 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_TOOL_TABLE);
         db.execSQL(CREATE_USAGE_TABLE);
         db.execSQL(CREATE_ITEM_TABLE);
+
+        //Inserting the available tools
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Broom', 'circle_broom');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Brush', 'circle_brush');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Bucket', 'circle_bucket');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Chainsaw', 'circle_chainsaw');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Hammer', 'circle_hammer');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Ladder', 'circle_ladder');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Lawn Mower', 'circle_lawn_mower');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Paint brush', 'circle_paint_brush');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Shopping bag', 'circle_shopping_store');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Sponge', 'circle_sponge');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Screwdriver', 'circle_tools');");
+        db.execSQL("INSERT INTO Tool(Name, Icon_path) VALUES ('Vacuum', 'circle_vacuum_cleaner');");
     }
 
     public int insertUser(User user) {

@@ -91,10 +91,9 @@ public class EditTask extends CreateTask {
         int assigneeId =  Integer.parseInt(((TextView)(((Spinner)findViewById(R.id.users)).getSelectedView().findViewById(R.id.userId))).getText().toString());
         String note = ((EditText)findViewById(R.id.note)).getText().toString();
         String description = ((EditText)findViewById(R.id.description)).getText().toString();
-        String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
+        int month = CALENDAR.get(Calendar.MONTH)+1; //because months are zero based
+        String date = CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + month + "/" + CALENDAR.get(Calendar.YEAR);
         if(assigneeId > 0) {
-            //TODO: change later
-            task.setCreator_id(1);
             task.setAssignee_id(assigneeId);
             task.setTitle(title);
             task.setDescription(description);
@@ -103,7 +102,6 @@ public class EditTask extends CreateTask {
             task.setDeadline(date);
             task.setReward(points);
         } else {
-            task.setCreator_id(1);
             task.setAssignee_id(assigneeId);
             task.setTitle(title);
             task.setDescription(description);
@@ -132,6 +130,7 @@ public class EditTask extends CreateTask {
             }
         }
 
+        setResult(RESULT_OK);
         //go back
         finish();
     }

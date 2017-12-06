@@ -12,6 +12,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -53,14 +54,14 @@ public class ViewTask extends AppCompatActivity {
         getSupportActionBar().setTitle(task.getTitle());
 
         ImageView avatar = findViewById(R.id.avatar);
-        if(assignee != null) {
+        ((TextView)(findViewById(R.id.status))).setText(task.getStatus());
+
+        if(assignee != null) { //This warning is wrong. the dbhandler returns null when no user is found.
             avatar.setImageResource(getResources().getIdentifier(assignee.getAvatar(), "drawable", this.getPackageName()));
             ((TextView)(findViewById(R.id.name))).setText(assignee.getName());
-            ((TextView)(findViewById(R.id.status))).setText(Task.Status.ASSIGNED.toString());
         } else {
-            avatar.setImageResource(getResources().getIdentifier("question_mark_button", "drawable", getApplicationContext().getPackageName()));
+            avatar.setImageResource(getResources().getIdentifier("question_mark_button", "drawable", this.getPackageName()));
             ((TextView)(findViewById(R.id.name))).setText("Nobody");
-            ((TextView)(findViewById(R.id.status))).setText(Task.Status.UNASSIGNED.toString());
         }
 
 
@@ -68,16 +69,16 @@ public class ViewTask extends AppCompatActivity {
 
 
         //Setting the deadline
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yy", Locale.US);
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         try {
-            date = formatter.parse(task.getDeadline()); //Passing "10/02/2017" will result in date actually being 10/01/2017.
+            date = formatter.parse(task.getDeadline());
         } catch (ParseException e) {
             e.printStackTrace();
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH)+1);
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
         TextView deadline = findViewById(R.id.deadline);
         if(Calendar.getInstance().get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
                 && Calendar.getInstance().get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
@@ -118,8 +119,11 @@ public class ViewTask extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.view_task_menu, menu);
-        return true;
+        if(!getIntent().getBooleanExtra("Backlog", false)) {
+            getMenuInflater().inflate(R.menu.view_task_menu, menu);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -164,6 +168,9 @@ public class ViewTask extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        recreate();
+        if(resultCode == RESULT_OK) {
+            recreate();
+            Toast.makeText(this, "Task updated!", Toast.LENGTH_LONG).show();
+        }
     }
 }

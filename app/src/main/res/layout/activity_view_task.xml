@@ -91,7 +91,7 @@
                 android:id="@+id/dateIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_today_black_24dp"
+                android:src="@drawable/date_blue"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="10dp"/>
             <TextView

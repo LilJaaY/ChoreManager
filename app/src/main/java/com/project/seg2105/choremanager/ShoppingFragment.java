@@ -45,9 +45,8 @@ public class ShoppingFragment extends Fragment {
 
         //Populating the Gridviews
         GridView materialsGrid = v.findViewById(R.id.materials);
-        updateMaterialsCursor();
         materialsAdapter = new SimpleCursorAdapter(getActivity(),
-                R.layout.shopping_row, materialsCursor,
+                R.layout.shopping_row, null,
                 new String[] {DbHandler.ITEM_NAME},
                 new int[] {R.id.name}, 0) {
             @Override
@@ -70,9 +69,8 @@ public class ShoppingFragment extends Fragment {
         materialsGrid.setAdapter(materialsAdapter);
 
         GridView groceriesGrid = v.findViewById(R.id.groceries);
-        updateGroceriesCursor();
         groceriesAdapter = new SimpleCursorAdapter(getActivity(),
-                R.layout.shopping_row, groceriesCursor,
+                R.layout.shopping_row, null,
                 new String[] {DbHandler.ITEM_NAME},
                 new int[] {R.id.name}, 0) {
             @Override
@@ -93,6 +91,8 @@ public class ShoppingFragment extends Fragment {
             }
         };
         groceriesGrid.setAdapter(groceriesAdapter);
+
+        updateUI();
 
         //Populating spinner
         category = v.findViewById(R.id.category);
@@ -124,57 +124,23 @@ public class ShoppingFragment extends Fragment {
                     }
 
                     //Update UI
-                    updateGroceriesCursor();
-                    updateMaterialsCursor();
-                    groceriesAdapter.changeCursor(groceriesCursor);
-                   // groceriesAdapter.notifyDataSetChanged();
-                    materialsAdapter.changeCursor(materialsCursor);
-                    //materialsAdapter.notifyDataSetChanged();
+                    updateUI();
                 }
             }
         });
         return  v;
     }
 
-    /*public void onAddClick(View v) {
-        //Check editText is not empty
-        EditText name = getView().findViewById(R.id.addItem);
-        if(name.getText().toString().isEmpty()) {
-            //Add item to database based on spinner's value
-            Item item = new Item();
-            if(category.getSelectedItem().toString().equals("Materials")) {
-                item.setCategory("Materials");
-                item.setName(name.getText().toString());
-                DbHandler.getInstance(getActivity()).insertItem(item);
-            } else {
-                item.setCategory("Groceries");
-                item.setName(name.getText().toString());
-                DbHandler.getInstance(getActivity()).insertItem(item);
-            }
-
-            //Update UI
-            updateGroceriesCursor();
-            updateMaterialsCursor();
-            groceriesAdapter.changeCursor(groceriesCursor);
-            materialsAdapter.changeCursor(materialsCursor);
-        }
-    }*/
-
-    private void updateMaterialsCursor() {
+    public void updateUI() {
         String sql = "SELECT * FROM " + DbHandler.ITEM_TABLE_NAME + " WHERE "
                 + DbHandler.ITEM_CATEGORY + "='Materials';";
         materialsCursor = DbHandler.getInstance(getActivity()).getWritableDatabase().rawQuery(sql, null);
-    }
+        materialsAdapter.changeCursor(materialsCursor);
 
-    private void updateGroceriesCursor() {
-        String sql = "SELECT * FROM " + DbHandler.ITEM_TABLE_NAME + " WHERE "
+        sql = "SELECT * FROM " + DbHandler.ITEM_TABLE_NAME + " WHERE "
                 + DbHandler.ITEM_CATEGORY + "='Groceries';";
         groceriesCursor = DbHandler.getInstance(getActivity()).getWritableDatabase().rawQuery(sql, null);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
+        groceriesAdapter.changeCursor(groceriesCursor);
     }
 
     @Override

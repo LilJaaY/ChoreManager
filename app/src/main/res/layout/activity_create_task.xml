@@ -159,7 +159,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_today_black_24dp"
+                android:src="@drawable/date_blue"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"/>
 
