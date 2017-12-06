@@ -230,7 +230,7 @@ public class DbHandler extends SQLiteOpenHelper {
         Cursor cursor;
         cursor = singleInstance.getWritableDatabase().query(
                 DbHandler.USER_TABLE_NAME,
-                new String[] {DbHandler.USER_ID, DbHandler.USER_NAME, DbHandler.USER_PASSWORD, DbHandler.USER_AVATAR, DbHandler.USER_POINTS},
+                new String[] {DbHandler.USER_ID, DbHandler.USER_NAME, DbHandler.USER_PASSWORD, DbHandler.USER_AVATAR, DbHandler.USER_POINTS, DbHandler.USER_RECOVERY},
                 DbHandler.USER_ID + "=" + userToFind.getId(), null, null, null, null);
         if(cursor.getCount() == 1) {
             cursor.moveToFirst();
