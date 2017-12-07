@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static android.app.Activity.RESULT_FIRST_USER;
 import static android.app.Activity.RESULT_OK;
@@ -97,6 +98,7 @@ public class PeopleFragment extends Fragment implements
                 User user = new User();
                 user.setId(data.getIntExtra("Id", 1));
                 ((MainActivity)getActivity()).setUpCurrentUser(user);
+                Toast.makeText(getActivity(), "User switched!", Toast.LENGTH_LONG).show();
         }
     }
 }
